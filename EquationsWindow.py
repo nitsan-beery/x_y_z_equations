@@ -164,7 +164,8 @@ class EquationsWindow:
                 self.entry_answer.insert(0, f'invalid n[{row+1}]')
                 return
 
-        self.entry_answer.insert(0, solve_equations(x))
+        result = solve_equations(x)
+        self.entry_answer.insert(0, get_solution_string(result))
 
     def switch_fraction_type(self):
         if toggle(self.button_fraction) == "on":
