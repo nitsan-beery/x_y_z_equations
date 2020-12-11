@@ -24,7 +24,7 @@ def test_matrix():
         [0, 3, 5, 2, 1, 13],
         [1, 1, 1, 1, 1, 6],
         [2, 3, 0, 1, 0, 7],
-        [0, 0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 1, 2]
     ]
     gv.MATRIX_SIZE = 5
     for row in range(0, gv.MATRIX_SIZE):

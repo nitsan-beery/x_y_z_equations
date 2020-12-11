@@ -3,12 +3,6 @@ import global_vars as gv
 
 
 def solve_equations(x):
-    hash_result = {
-        0: 0
-    }
-    # prepare hash for columns change
-    for i in range(1, gv.MATRIX_SIZE):
-        hash_result[i] = i
     for col in range(0, gv.MATRIX_SIZE):
         # debug
         print_matrix(x)
@@ -17,36 +11,20 @@ def solve_equations(x):
             r = find_non_zero_row(x, ref)
             # can't find row
             if r < 0:
-                c = find_non_zero_col(x, ref)
-                # can't find col
-                if c < 0:
-                    if x[ref][-1] != 0:
-                        return "No solution"
-                    # solution x[ref] = infinite
-                    else:
-                        continue
-                else:
-                    replace_cols(x, ref, c)
-                    hash_result[c], hash_result[ref] = hash_result[ref], hash_result[c]
-                    # debug
-                    print_matrix(x)
+                continue
             else:
                 replace_rows(x, ref, r)
                 # debug
                 print_matrix(x)
+        ref_value = x[ref][ref]
+        for c in range(ref, gv.MATRIX_SIZE + 1):
+            x[ref][c] /= ref_value
         for row in range(0, gv.MATRIX_SIZE):
-            if row == ref or x[row][ref] == 0:
+            if x[row][ref] == 0 or row == ref:
                 continue
-            row_ratio = x[row][ref]/x[ref][ref]
+            row_ratio = x[row][ref]
             for c in range(ref, gv.MATRIX_SIZE+1):
                 x[row][c] -= x[ref][c] * row_ratio
-    # debug
-    print_matrix(x)
-    for row in range(0, gv.MATRIX_SIZE):
-        if x[row][row] != 0:
-            for col in range(row+1, gv.MATRIX_SIZE+1):
-                x[row][col] /= x[row][row]
-            x[row][row] = 1
     # debug
     print_matrix(x)
 
@@ -61,18 +39,20 @@ def solve_equations(x):
         result_array.append('')
     for row in range(0, gv.MATRIX_SIZE):
         if x[row][row] == 0:
-            result_array[hash_result.get(row)] = 'infinite'
+            if x[row][-1] != 0:
+                return "No Solution"
+            result_array[row] = 'infinite'
         else:
-            result_array[hash_result.get(row)] = f'{x[row][-1]}'
+            result_array[row] = f'{x[row][-1]}'
             for col in range(row+1, gv.MATRIX_SIZE):
                 if x[row][col] != 0:
                     sign = '- '
                     if x[row][col] < 0:
                         sign = '+ '
-                    result_array[hash_result.get(row)] += f' {sign}'
+                    result_array[row] += f' {sign}'
                     if abs(x[row][col]) != 1:
-                        result_array[hash_result.get(row)] += f'{abs(x[row][col])}'
-                    result_array[hash_result.get(row)] += name_x[hash_result.get(col)]
+                        result_array[row] += f'{abs(x[row][col])}'
+                    result_array[row] += name_x[col]
 
     # prepare the solution string
     result = ''
@@ -83,15 +63,11 @@ def solve_equations(x):
 
 
 def find_non_zero_row(x, n):
-    for r in range(n, gv.MATRIX_SIZE):
+    for r in range(n + 1, gv.MATRIX_SIZE):
         if x[r][n] != 0:
             return r
-    return -1
-
-
-def find_non_zero_col(x, n):
-    for r in range(n, gv.MATRIX_SIZE):
-        if x[n][r] != 0:
+    for r in range(0, n):
+        if x[r][n] != 0 and x[r][r] == 0:
             return r
     return -1
 
@@ -99,11 +75,6 @@ def find_non_zero_col(x, n):
 def replace_rows(x, m, n):
     for col in range(0, gv.MATRIX_SIZE+1):
         x[m][col], x[n][col] = x[n][col], x[m][col]
-
-
-def replace_cols(x, m, n):
-    for row in range(0, gv.MATRIX_SIZE):
-        x[row][m], x[row][n] = x[row][n], x[row][m]
 
 
 # debug
