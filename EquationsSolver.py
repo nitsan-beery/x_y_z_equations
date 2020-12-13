@@ -6,7 +6,6 @@ def solve_equations(x):
     if gv.show_steps:
         print('\n==========================\n')
     for col in range(0, gv.MATRIX_SIZE):
-        # debug
         if gv.show_steps:
             print_matrix(x)
         ref = col
@@ -17,7 +16,6 @@ def solve_equations(x):
                 continue
             else:
                 replace_rows(x, ref, r)
-                # debug
                 if gv.show_steps:
                     print_matrix(x)
         ref_value = x[ref][ref]
@@ -29,7 +27,6 @@ def solve_equations(x):
             row_ratio = x[row][ref]
             for c in range(ref, gv.MATRIX_SIZE+1):
                 x[row][c] -= x[ref][c] * row_ratio
-    # debug
     if gv.show_steps:
         print_matrix(x)
 
@@ -97,8 +94,9 @@ def get_solution_string(str_result_array, spaces=5):
     return result
 
 
-# debug
 def print_matrix(x):
+    tmp_state = gv.SHOW_INT_ABOVE_1
+    gv.SHOW_INT_ABOVE_1 = False
     for row in range(0, gv.MATRIX_SIZE):
         str_row = ''
         for col in range(0, gv.MATRIX_SIZE):
@@ -106,3 +104,4 @@ def print_matrix(x):
         str_row += f'   {x[row][-1]}'
         print(str_row)
     print('--------------------------')
+    gv.SHOW_INT_ABOVE_1 = tmp_state

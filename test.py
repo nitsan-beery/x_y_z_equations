@@ -9,8 +9,11 @@ def test_operator():
 
 
 def test():
-    #test_matrix()
-    test_big_matrix()
+    gv.show_steps = False
+    gv.SHOW_INT_ABOVE_1 = False
+
+    test_matrix()
+    #test_big_matrix()
 
 
 def test_matrix():
@@ -34,13 +37,19 @@ def test_matrix():
             [0, 2, 2, 4],
             [0, 1, 1, 1],
             [0, 0, 0, 0]
-        ]
+        ],
+        [
+            [-1, 2, 2, 4],
+            [0, 1.5, 1, 5],
+            [3, 0, -5, -10]
+        ],
     ]
     r = [
         [gv.infinite, '3/5', '7/5'],
         ['-2 + z', '3 - 2z', gv.infinite],
         ['12/5', '-1/5', '1'],
-        [gv.no_solution, gv.no_solution, gv.no_solution]
+        [gv.no_solution, gv.no_solution, gv.no_solution],
+        ['20/3', '-2/3', '6'],
     ]
     for i in range(0, len(m)):
         x = m[i]
@@ -56,13 +65,15 @@ def test_matrix():
 
 
 def test_big_matrix():
-    n = 10
+    n = 50
     gv.MATRIX_SIZE = n
     y = []
     for row in range(0, n):
         c = []
         for col in range(0, n):
             c.append(Rational(random.randint(0, 100)))
+            if random.randint(0, 1):
+                c[-1] *= -1
         c.append(Rational(random.randint(101, 999)))
         y.append(c)
     if not gv.show_steps:

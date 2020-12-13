@@ -2,7 +2,7 @@ MAX_DIGITS_TO_SHOW_FRACTION = 5
 SHOW_INT_ABOVE_1 = True
 
 test_mode = False
-show_steps = False
+show_steps = True
 debug_mode = False
 
 X_ENTRY_ZIZE = 5

@@ -1,6 +1,4 @@
 import tkinter as tk
-import global_vars as gv
-from Rational import *
 from EquationsSolver import *
 
 
@@ -47,7 +45,7 @@ class EquationsWindow:
         self.entry_x01 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
         self.label_plus02 = tk.Label(self.frame_2_input, text='+')
         self.entry_x02 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
-        self.label_equall0 = tk.Label(self.frame_2_input, text='=')
+        self.label_equal0 = tk.Label(self.frame_2_input, text='=')
         self.entry_n0 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
 
         self.label_row1.grid(row=2, column=0, padx=5, sticky='E')
@@ -56,7 +54,7 @@ class EquationsWindow:
         self.entry_x01.grid(row=2, column=3, padx=5)
         self.label_plus02.grid(row=2, column=4)
         self.entry_x02.grid(row=2, column=5, padx=5)
-        self.label_equall0.grid(row=2, column=6)
+        self.label_equal0.grid(row=2, column=6)
         self.entry_n0.grid(row=2, column=7, padx=5)
 
         self.label_empty_22 = tk.Label(self.frame_2_input, text='')
@@ -66,7 +64,7 @@ class EquationsWindow:
         self.entry_x11 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
         self.label_plus12 = tk.Label(self.frame_2_input, text='+')
         self.entry_x12 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
-        self.label_equall1 = tk.Label(self.frame_2_input, text='=')
+        self.label_equal1 = tk.Label(self.frame_2_input, text='=')
         self.entry_n1 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
 
         self.label_empty_22.grid(row=3, column=0, pady=1)
@@ -76,7 +74,7 @@ class EquationsWindow:
         self.entry_x11.grid(row=4, column=3, padx=5)
         self.label_plus12.grid(row=4, column=4)
         self.entry_x12.grid(row=4, column=5, padx=5)
-        self.label_equall1.grid(row=4, column=6)
+        self.label_equal1.grid(row=4, column=6)
         self.entry_n1.grid(row=4, column=7, padx=5)
 
         self.label_empty_23 = tk.Label(self.frame_2_input, text='')
@@ -86,7 +84,7 @@ class EquationsWindow:
         self.entry_x21 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
         self.label_plus22 = tk.Label(self.frame_2_input, text='+')
         self.entry_x22 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
-        self.label_equall2 = tk.Label(self.frame_2_input, text='=')
+        self.label_equal2 = tk.Label(self.frame_2_input, text='=')
         self.entry_n2 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_ZIZE)
 
         self.label_empty_23.grid(row=5, column=0, pady=1)
@@ -96,12 +94,12 @@ class EquationsWindow:
         self.entry_x21.grid(row=6, column=3, padx=5)
         self.label_plus22.grid(row=6, column=4)
         self.entry_x22.grid(row=6, column=5, padx=5)
-        self.label_equall2.grid(row=6, column=6)
+        self.label_equal2.grid(row=6, column=6)
         self.entry_n2.grid(row=6, column=7, padx=5)
 
         self.label_empty_31 = tk.Label(self.frame_3_buttons, text='')
-        self.button_solve = tk.Button(self.frame_3_buttons, text='Solve', width=4, bg='#B3FFFF', command=self.solve)
-        self.button_reset = tk.Button(self.frame_3_buttons, text='Reset', width=4, bg='#CCFFCC', command=self.reset)
+        self.button_solve = tk.Button(self.frame_3_buttons, text='Solve', width=4, bg='#CCFFCC', command=self.solve)
+        self.button_reset = tk.Button(self.frame_3_buttons, text='Reset', width=4, bg='#F9C7C7', command=self.reset)
         self.button_fraction = tk.Button(self.frame_3_buttons, text='m(n/q)', width=6, command=self.switch_fraction_type)
         self.button_steps = tk.Button(self.frame_3_buttons, text='show steps', width=8, command=self.switch_show_steps_mode)
 
@@ -144,13 +142,13 @@ class EquationsWindow:
         self.entry_n1.insert(0, 0)
         self.entry_n2.delete(0, tk.END)
         self.entry_n2.insert(0, 0)
-        self.entry_answer.delete(0, tk.END)
 
         tmp_state = gv.show_steps
         gv.show_steps = False
         self.solve()
         gv.show_steps = tmp_state
 
+        self.entry_answer.delete(0, tk.END)
         self.entry_x00.focus_set()
         self.entry_x00.selection_range(0, tk.END)
 
