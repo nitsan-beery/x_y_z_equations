@@ -30,31 +30,29 @@ def solve_equations(x):
     if gv.show_steps:
         print_matrix(x)
 
-    # arrange result by order (x y z)
-    str_result_array = []
-    no_solution_str_array = []
-    name_x = get_name_x()
+    # arrange results for each x[i]
+    result_array = []
+    xi_result_vector = []
     for i in range(0, gv.MATRIX_SIZE):
-        str_result_array.append('')
-        no_solution_str_array.append(gv.no_solution)
+        xi_result_vector.append(Rational(0))
+    for i in range(0, gv.MATRIX_SIZE):
+        result_array.append(xi_result_vector.copy())
+
     for row in range(0, gv.MATRIX_SIZE):
         if x[row][row] == 0:
             if x[row][-1] != 0:
-                return no_solution_str_array
-            str_result_array[row] = gv.infinite
+                result_array[0][0] = no_solution_rational
+                break
+            result_array[row][row] = infinite_rational
         else:
-            str_result_array[row] = f'{x[row][-1]}'
-            for col in range(row+1, gv.MATRIX_SIZE):
+            result_array[row][row] = x[row][-1]
+            for col in range(0, gv.MATRIX_SIZE):
+                if col == row:
+                    continue
                 if x[row][col] != 0:
-                    sign = '- '
-                    if x[row][col] < 0:
-                        sign = '+ '
-                    str_result_array[row] += f' {sign}'
-                    if abs(x[row][col]) != 1:
-                        str_result_array[row] += f'{abs(x[row][col])}'
-                    str_result_array[row] += name_x[col]
+                    result_array[row][col] = -x[row][col]
 
-    return str_result_array
+    return result_array
 
 
 def find_non_zero_row(x, n):
@@ -81,8 +79,8 @@ def get_name_x():
     return name_x
 
 
-def get_solution_string(str_result_array, spaces=5):
-    if str_result_array[0] == gv.no_solution:
+def get_solution_string(result_array, spaces=5):
+    if result_array[0][0] == no_solution_rational:
         return gv.no_solution
     name_x = get_name_x()
     result = ''
@@ -90,7 +88,26 @@ def get_solution_string(str_result_array, spaces=5):
     for i in range(0, spaces):
         space += ' '
     for i in range(0, gv.MATRIX_SIZE):
-        result += f'{name_x[i]} = {str_result_array[i]}' + space
+        result_i = ''
+        if result_array[i][i] == infinite_rational:
+            result_i = gv.infinite
+        else:
+            result_i = f'{result_array[i][i]}'
+            for c in range(0, len(result_array[i])):
+                if c == i:
+                    continue
+                if result_array[i][c] != 0:
+                    if result_array[i][c] < 0:
+                        sign = '-'
+                    else:
+                        sign = '+'
+                    num_i = abs(result_array[i][c])
+                    if num_i == 1:
+                        str_num_i = ''
+                    else:
+                        str_num_i = str(num_i)
+                    result_i += f' {sign} {str_num_i}{name_x[c]}'
+        result += f'{name_x[i]} = {result_i}' + space
     return result
 
 

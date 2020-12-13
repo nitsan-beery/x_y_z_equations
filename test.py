@@ -17,6 +17,7 @@ def test():
 
 
 def test_matrix():
+    gv.MATRIX_SIZE = 3
     m = [
         [
             [0, 2, 2, 4],
@@ -45,17 +46,45 @@ def test_matrix():
         ],
     ]
     r = [
-        [gv.infinite, '3/5', '7/5'],
-        ['-2 + z', '3 - 2z', gv.infinite],
-        ['12/5', '-1/5', '1'],
-        [gv.no_solution, gv.no_solution, gv.no_solution],
-        ['20/3', '-2/3', '6'],
+        [
+            [infinite_rational, 0, 0],
+            [0, 3/5, 0],
+            [0, 0, 7/5],
+        ],
+        [
+            [-2, 0, 1],
+            [0, 3, -2],
+            [0, 0, infinite_rational],
+        ],
+        [
+            [12/5, 0, 0],
+            [0, -1/5, 0],
+            [0, 0, 1],
+        ],
+        [
+            [no_solution_rational, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ],
+        [
+            ['20/3', 0, 0],
+            [0, '-2/3', 0],
+            [0, 0, 6],
+        ],
+        [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ],
     ]
     for i in range(0, len(m)):
         x = m[i]
+        rx = r[i]
         for row in range(0, gv.MATRIX_SIZE):
-            for col in range(0, gv.MATRIX_SIZE + 1):
+            for col in range(0, gv.MATRIX_SIZE):
                 x[row][col] = Rational(x[row][col])
+                rx[row][col] = Rational(rx[row][col])
+            x[row][-1] = Rational(x[row][-1])
         t = solve_equations(x)
         result = True
         for j in range(0, len(t)):
@@ -65,7 +94,7 @@ def test_matrix():
 
 
 def test_big_matrix():
-    n = 50
+    n = 3
     gv.MATRIX_SIZE = n
     y = []
     for row in range(0, n):

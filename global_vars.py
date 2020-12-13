@@ -1,8 +1,8 @@
 MAX_DIGITS_TO_SHOW_FRACTION = 5
-SHOW_INT_ABOVE_1 = True
+SHOW_INT_ABOVE_1 = False
 
 test_mode = False
-show_steps = True
+show_steps = False
 debug_mode = False
 
 X_ENTRY_ZIZE = 5

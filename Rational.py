@@ -22,7 +22,7 @@ class Rational:
             return "0"
         elif d == 1:
             return f"{n}"
-        elif len(str(d)) > gv.MAX_DIGITS_TO_SHOW_FRACTION:
+        elif d != 0 and len(str(d)) > gv.MAX_DIGITS_TO_SHOW_FRACTION:
             if int((10 ** gv.FLOAT_SHOW_DIGITS) * n/d) == (10 ** gv.FLOAT_SHOW_DIGITS) * n/d:
                 str_num = f"{(n/d)}"
             else:
@@ -32,7 +32,7 @@ class Rational:
                 part = str(part)[2:gv.FLOAT_SHOW_DIGITS + 2]
                 str_num = f'{num}.{part}...'
             return str_num
-        if abs(n) > d and gv.SHOW_INT_ABOVE_1:
+        if d != 0 and abs(n) > d and gv.SHOW_INT_ABOVE_1:
             return f"{int(n / d)}({abs(n) % d}/{d})"
         return f"{n}/{d}"
 
@@ -121,6 +121,13 @@ class Rational:
             f = Rational(p/q)
         return f
 
+    def __neg__(self):
+        f = Rational()
+        f.numerator = -self.numerator
+        f.denominator = self.denominator
+        return f
+
+
     def __abs__(self):
         f = Rational()
         f.numerator = abs(self.numerator)
@@ -195,3 +202,7 @@ def get_n_d_from_exp(exp):
     n = d * i + sign * r
     g = get_gcd(n, d)
     return int(n/g), int(d/g)
+
+
+infinite_rational = Rational('1/0')
+no_solution_rational = Rational('0/0')
