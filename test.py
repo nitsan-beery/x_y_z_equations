@@ -1,5 +1,4 @@
 import random
-from Rational import *
 from EquationsSolver import *
 
 
@@ -7,6 +6,11 @@ def test_operator():
     f = Rational("4")
     f = f ** .5
     print(f)
+
+
+def test():
+    #test_matrix()
+    test_big_matrix()
 
 
 def test_matrix():
@@ -52,17 +56,17 @@ def test_matrix():
 
 
 def test_big_matrix():
-    y = [
-        [1, 2, 3, 4, -10, 4],
-        [0, 3, 5, 2, 1, 13],
-        [1, 1, 1, 1, 1, 6],
-        [2, 3, 0, 1, 0, 7],
-        [0, 0, 0, 0, 1, 2]
-    ]
-    gv.MATRIX_SIZE = 5
-    for row in range(0, gv.MATRIX_SIZE):
-        for col in range(0, gv.MATRIX_SIZE + 1):
-            y[row][col] = Rational(y[row][col])
+    n = 10
+    gv.MATRIX_SIZE = n
+    y = []
+    for row in range(0, n):
+        c = []
+        for col in range(0, n):
+            c.append(Rational(random.randint(0, 100)))
+        c.append(Rational(random.randint(101, 999)))
+        y.append(c)
+    if not gv.show_steps:
+        print_matrix(y)
     t = solve_equations(y)
-    print(t)
+    print(get_solution_string(t, spaces=2))
 

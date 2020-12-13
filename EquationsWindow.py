@@ -103,14 +103,21 @@ class EquationsWindow:
         self.button_solve = tk.Button(self.frame_3_buttons, text='Solve', width=4, bg='#B3FFFF', command=self.solve)
         self.button_reset = tk.Button(self.frame_3_buttons, text='Reset', width=4, bg='#CCFFCC', command=self.reset)
         self.button_fraction = tk.Button(self.frame_3_buttons, text='m(n/q)', width=6, command=self.switch_fraction_type)
+        self.button_steps = tk.Button(self.frame_3_buttons, text='show steps', width=8, command=self.switch_show_steps_mode)
 
         self.label_empty_31.pack(side=tk.TOP)
         self.button_solve.pack(side=tk.LEFT, padx=5)
         self.button_reset.pack(side=tk.RIGHT, padx=5)
         self.button_fraction.pack(side=tk.RIGHT, padx=5)
+        self.button_steps.pack(side=tk.RIGHT, padx=5)
+
+        self.window_main.bind('<Key>', self.board_key)
 
         self.reset()
-        self.window_main.bind('<Key>', self.board_key)
+        if gv.show_steps:
+            self.button_steps.config(relief="sunken")
+        if gv.SHOW_INT_ABOVE_1:
+            self.button_fraction.config(relief="sunken")
 
     def reset(self):
         self.entry_x00.delete(0, tk.END)
@@ -139,9 +146,13 @@ class EquationsWindow:
         self.entry_n2.insert(0, 0)
         self.entry_answer.delete(0, tk.END)
 
+        tmp_state = gv.show_steps
+        gv.show_steps = False
         self.solve()
+        gv.show_steps = tmp_state
 
         self.entry_x00.focus_set()
+        self.entry_x00.selection_range(0, tk.END)
 
     def solve(self):
         x = [
@@ -172,7 +183,16 @@ class EquationsWindow:
             gv.SHOW_INT_ABOVE_1 = True
         else:
             gv.SHOW_INT_ABOVE_1 = False
+        tmp_state = gv.show_steps
+        gv.show_steps = False
         self.solve()
+        gv.show_steps = tmp_state
+
+    def switch_show_steps_mode(self):
+        if toggle(self.button_steps) == "on":
+            gv.show_steps = True
+        else:
+            gv.show_steps = False
 
     def board_key(self, key):
         if key.keycode == 13:

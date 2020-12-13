@@ -10,6 +10,6 @@ def run_gui():
 
 if __name__ == '__main__':
     if gv.test_mode:
-        test_matrix()
+        test()
     else:
         run_gui()

@@ -23,7 +23,15 @@ class Rational:
         elif d == 1:
             return f"{n}"
         elif len(str(d)) > gv.MAX_DIGITS_TO_SHOW_FRACTION:
-            return f"{n/d}"
+            if int((10 ** gv.FLOAT_SHOW_DIGITS) * n/d) == (10 ** gv.FLOAT_SHOW_DIGITS) * n/d:
+                str_num = f"{(n/d)}"
+            else:
+                f = n/d
+                num = int(f)
+                part = abs(f - num)
+                part = str(part)[2:gv.FLOAT_SHOW_DIGITS + 2]
+                str_num = f'{num}.{part}...'
+            return str_num
         if abs(n) > d and gv.SHOW_INT_ABOVE_1:
             return f"{int(n / d)}({abs(n) % d}/{d})"
         return f"{n}/{d}"
