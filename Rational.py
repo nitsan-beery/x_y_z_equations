@@ -182,9 +182,10 @@ def get_n_d_from_exp(exp):
     # exp is float
     if exp == int(exp):
         return int(exp), 1
-    periodic = check_periodic(exp)
-    if periodic > 0:
-        return exp * periodic, periodic
+    if len(str(exp)) > gv.MAX_DIGITS_TO_SHOW_FRACTION:
+        periodic = check_periodic(exp)
+        if periodic > 0:
+            return exp * periodic, periodic
     exp = str(exp)
     sign = 1
     if exp[0] == '-':

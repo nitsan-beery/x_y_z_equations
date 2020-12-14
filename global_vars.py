@@ -1,5 +1,5 @@
 
-test_mode = True
+test_mode = False
 debug_mode = False
 
 show_int_above_1 = False
@@ -10,7 +10,7 @@ FLOAT_SHOW_DIGITS = 3
 MAX_DIGITS_TO_SHOW_FRACTION = 5
 MAX_N_FOR_PERIODIC_CHECK = 97
 
-X_ENTRY_ZIZE = 5
+X_ENTRY_SIZE = 5
 
 no_solution = 'No Solution'
 infinite = 'infinite'

@@ -3,7 +3,7 @@ from EquationsSolver import *
 
 
 def test_operator():
-    f = Rational(0.25)
+    f = Rational(1/8000)
     print(f)
 
 
@@ -12,8 +12,8 @@ def test():
     gv.SHOW_INT_ABOVE_1 = False
 
     #test_matrix()
-    #test_big_matrix()
-    test_operator()
+    test_big_matrix()
+    #test_operator()
 
 
 def test_matrix():
@@ -67,8 +67,8 @@ def test_matrix():
             [0, 0, 0],
         ],
         [
-            ['20/3', 0, 0],
-            [0, '-2/3', 0],
+            [20/3, 0, 0],
+            [0, -2/3, 0],
             [0, 0, 6],
         ],
         [
@@ -94,7 +94,7 @@ def test_matrix():
 
 
 def test_big_matrix():
-    n = 3
+    n = 50
     gv.MATRIX_SIZE = n
     y = []
     for row in range(0, n):
