@@ -17,6 +17,26 @@ class EquationsWindow:
         self.window_main.geometry('320x250')
         self.window_main.resizable(0, 0)
 
+        name_x = get_name_x()
+        self.label_name_x = []
+        self.entry_x = []
+        self.entry_n = []
+        self.label_plus = []
+        self.label_equal = []
+        self.label_empty = []
+        self.label_row = []
+        none_row = []
+        for col in range(0, gv.MATRIX_SIZE):
+            none_row.append(None)
+        for row in range(0, gv.MATRIX_SIZE):
+            self.label_name_x.append(None)
+            self.entry_x.append(none_row.copy())
+            self.entry_n.append(None)
+            self.label_plus.append(none_row.copy())
+            self.label_equal.append(None)
+            self.label_empty.append(None)
+            self.label_row.append(None)
+
         self.frame_1_output = tk.Frame(self.window_main)
         self.frame_1_output.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
         self.frame_2_input = tk.Frame(self.window_main)
@@ -28,35 +48,28 @@ class EquationsWindow:
         self.entry_answer.grid(row=0, column=0, padx=5, pady=5, ipady=3)
 
         self.label_empty_21 = tk.Label(self.frame_2_input, text='')
-        self.label_x = tk.Label(self.frame_2_input, text='X', padx=5)
-        self.label_y = tk.Label(self.frame_2_input, text='Y', padx=5)
-        self.label_z = tk.Label(self.frame_2_input, text='Z', padx=5)
+        self.label_empty_21.grid(row=1, column=0, pady=1)
+        for i in range(0, gv.MATRIX_SIZE):
+            self.label_name_x[i] = tk.Label(self.frame_2_input, text=name_x[i].capitalize(), padx=5)
+            self.label_name_x[i].grid(row=1, column=2*i+1)
         self.label_n = tk.Label(self.frame_2_input, text='n', padx=5)
-
-        self.label_empty_21.grid(row=1, column=0, padx=25)
-        self.label_x.grid(row=1, column=1)
-        self.label_y.grid(row=1, column=3)
-        self.label_z.grid(row=1, column=5)
         self.label_n.grid(row=1, column=7)
 
-        self.label_row1 = tk.Label(self.frame_2_input, text='1')
-        self.entry_x00 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
-        self.label_plus01 = tk.Label(self.frame_2_input, text='+')
-        self.entry_x01 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
-        self.label_plus02 = tk.Label(self.frame_2_input, text='+')
-        self.entry_x02 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
-        self.label_equal0 = tk.Label(self.frame_2_input, text='=')
-        self.entry_n0 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
+        for row in range(0, gv.MATRIX_SIZE):
+            self.label_empty[row] = tk.Label(self.frame_2_input, text='')
+            self.label_empty[row].grid(row=row*2+1, column=0, pady=1)
+            self.label_row[row] = tk.Label(self.frame_2_input, text=row)
+            self.label_row[row].grid(row=row+2, column=0, padx=5, sticky='E')
+            for col in range(0, gv.MATRIX_SIZE):
+                self.entry_x[row][col] = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
+                self.entry_x[row][col].grid(row=row+2, column=2*col+1, padx=5)
+                self.label_plus[row][col] = tk.Label(self.frame_2_input, text='+')
+                self.label_plus[row][col].grid(row=2, column=2*(col+1))
+            self.label_equal[row] = tk.Label(self.frame_2_input, text='=')
+            self.entry_n[row] = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
+            self.entry_n[row].grid(row=2*(row+1), column=2*gv.MATRIX_SIZE+1, padx=5)
 
-        self.label_row1.grid(row=2, column=0, padx=5, sticky='E')
-        self.entry_x00.grid(row=2, column=1, padx=5)
-        self.label_plus01.grid(row=2, column=2)
-        self.entry_x01.grid(row=2, column=3, padx=5)
-        self.label_plus02.grid(row=2, column=4)
-        self.entry_x02.grid(row=2, column=5, padx=5)
-        self.label_equal0.grid(row=2, column=6)
-        self.entry_n0.grid(row=2, column=7, padx=5)
-
+        '''
         self.label_empty_22 = tk.Label(self.frame_2_input, text='')
         self.label_row2 = tk.Label(self.frame_2_input, text='2')
         self.entry_x10 = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
@@ -96,7 +109,7 @@ class EquationsWindow:
         self.entry_x22.grid(row=6, column=5, padx=5)
         self.label_equal2.grid(row=6, column=6)
         self.entry_n2.grid(row=6, column=7, padx=5)
-
+'''
         self.label_empty_31 = tk.Label(self.frame_3_buttons, text='')
         self.button_solve = tk.Button(self.frame_3_buttons, text='Solve', width=4, bg='#CCFFCC', command=self.solve)
         self.button_reset = tk.Button(self.frame_3_buttons, text='Reset', width=4, bg='#F9C7C7', command=self.reset)
@@ -119,35 +132,17 @@ class EquationsWindow:
             self.button_fraction.config(relief="sunken")
 
     def reset(self):
-        self.entry_x00.delete(0, tk.END)
-        self.entry_x00.insert(0, 0)
-        self.entry_x01.delete(0, tk.END)
-        self.entry_x01.insert(0, 0)
-        self.entry_x02.delete(0, tk.END)
-        self.entry_x02.insert(0, 0)
-        self.entry_x10.delete(0, tk.END)
-        self.entry_x10.insert(0, 0)
-        self.entry_x11.delete(0, tk.END)
-        self.entry_x11.insert(0, 0)
-        self.entry_x12.delete(0, tk.END)
-        self.entry_x12.insert(0, 0)
-        self.entry_x20.delete(0, tk.END)
-        self.entry_x20.insert(0, 0)
-        self.entry_x21.delete(0, tk.END)
-        self.entry_x21.insert(0, 0)
-        self.entry_x22.delete(0, tk.END)
-        self.entry_x22.insert(0, 0)
-        self.entry_n0.delete(0, tk.END)
-        self.entry_n0.insert(0, 0)
-        self.entry_n1.delete(0, tk.END)
-        self.entry_n1.insert(0, 0)
-        self.entry_n2.delete(0, tk.END)
-        self.entry_n2.insert(0, 0)
+        for row in range(0, gv.MATRIX_SIZE):
+            for col in range(0, gv.MATRIX_SIZE):
+                self.entry_x[row][col].delete(0, tk.END)
+                self.entry_x[row][col].insert(0, 0)
+            self.entry_n[row].delete(0, tk.END)
+            self.entry_n[row].insert(0, 0)
 
         self.solution = gv.no_solution
         self.entry_answer.delete(0, tk.END)
-        self.entry_x00.focus_set()
-        self.entry_x00.selection_range(0, tk.END)
+        self.entry_x[0][0].focus_set()
+        self.entry_x[0][0].selection_range(0, tk.END)
 
     def solve(self):
         x = [
