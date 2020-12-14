@@ -3,8 +3,7 @@ from EquationsSolver import *
 
 
 def test_operator():
-    f = Rational("4")
-    f = f ** .5
+    f = Rational(0.25)
     print(f)
 
 
@@ -12,8 +11,9 @@ def test():
     gv.show_steps = False
     gv.SHOW_INT_ABOVE_1 = False
 
-    test_matrix()
+    #test_matrix()
     #test_big_matrix()
+    test_operator()
 
 
 def test_matrix():

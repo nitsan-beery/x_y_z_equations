@@ -112,8 +112,8 @@ def get_solution_string(result_array, spaces=5):
 
 
 def print_matrix(x):
-    tmp_state = gv.SHOW_INT_ABOVE_1
-    gv.SHOW_INT_ABOVE_1 = False
+    tmp_state = gv.show_int_above_1
+    gv.show_int_above_1 = False
     for row in range(0, gv.MATRIX_SIZE):
         str_row = ''
         for col in range(0, gv.MATRIX_SIZE):
@@ -121,4 +121,4 @@ def print_matrix(x):
         str_row += f'   {x[row][-1]}'
         print(str_row)
     print('--------------------------')
-    gv.SHOW_INT_ABOVE_1 = tmp_state
+    gv.show_int_above_1 = tmp_state

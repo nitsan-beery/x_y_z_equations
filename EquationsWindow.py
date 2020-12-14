@@ -111,10 +111,11 @@ class EquationsWindow:
 
         self.window_main.bind('<Key>', self.board_key)
 
+        self.solution = None
         self.reset()
         if gv.show_steps:
             self.button_steps.config(relief="sunken")
-        if gv.SHOW_INT_ABOVE_1:
+        if gv.show_int_above_1:
             self.button_fraction.config(relief="sunken")
 
     def reset(self):
@@ -143,11 +144,7 @@ class EquationsWindow:
         self.entry_n2.delete(0, tk.END)
         self.entry_n2.insert(0, 0)
 
-        tmp_state = gv.show_steps
-        gv.show_steps = False
-        self.solve()
-        gv.show_steps = tmp_state
-
+        self.solution = gv.no_solution
         self.entry_answer.delete(0, tk.END)
         self.entry_x00.focus_set()
         self.entry_x00.selection_range(0, tk.END)
@@ -173,18 +170,17 @@ class EquationsWindow:
                 self.entry_answer.insert(0, f'invalid n[{row+1}]')
                 return
 
-        result = solve_equations(x)
-        self.entry_answer.insert(0, get_solution_string(result))
+        self.solution = solve_equations(x)
+        self.entry_answer.insert(0, get_solution_string(self.solution))
 
     def switch_fraction_type(self):
         if toggle(self.button_fraction) == "on":
-            gv.SHOW_INT_ABOVE_1 = True
+            gv.show_int_above_1 = True
         else:
-            gv.SHOW_INT_ABOVE_1 = False
-        tmp_state = gv.show_steps
-        gv.show_steps = False
-        self.solve()
-        gv.show_steps = tmp_state
+            gv.show_int_above_1 = False
+        if self.solution != gv.no_solution:
+            self.entry_answer.delete(0, tk.END)
+            self.entry_answer.insert(0, get_solution_string(self.solution))
 
     def switch_show_steps_mode(self):
         if toggle(self.button_steps) == "on":

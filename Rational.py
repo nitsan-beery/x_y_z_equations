@@ -32,7 +32,7 @@ class Rational:
                 part = str(part)[2:gv.FLOAT_SHOW_DIGITS + 2]
                 str_num = f'{num}.{part}...'
             return str_num
-        if d != 0 and abs(n) > d and gv.SHOW_INT_ABOVE_1:
+        if d != 0 and abs(n) > d and gv.show_int_above_1:
             return f"{int(n / d)}({abs(n) % d}/{d})"
         return f"{n}/{d}"
 
@@ -127,7 +127,6 @@ class Rational:
         f.denominator = self.denominator
         return f
 
-
     def __abs__(self):
         f = Rational()
         f.numerator = abs(self.numerator)
@@ -151,7 +150,7 @@ def get_gcd(p, q):
 # if exp is invalid return 0, 0
 def get_n_d_from_exp(exp):
     if exp is None:
-        return 1, 1
+        return 0, 0
     if type(exp) is Rational:
         return exp.numerator, exp.denominator
     if type(exp) is str:
@@ -177,15 +176,16 @@ def get_n_d_from_exp(exp):
         # no slashes
         else:
             try:
-                f = float(exp)
+                exp = float(exp)
             except ValueError:
                 return 0, 0
-    else:
-        exp = str(exp)
-    # exp is int
-    if exp.count(".") == 0:
-        return int(exp), 1
     # exp is float
+    if exp == int(exp):
+        return int(exp), 1
+    periodic = check_periodic(exp)
+    if periodic > 0:
+        return exp * periodic, periodic
+    exp = str(exp)
     sign = 1
     if exp[0] == '-':
         sign = -1
@@ -194,15 +194,21 @@ def get_n_d_from_exp(exp):
         i = 0
     else:
         i = int(exp[:p])
-    r = int(exp[p+1:])
+    r = int(exp[p + 1:])
     if r == 0:
         return i, 1
     p = len(str(r))
-    d = 10**p
+    d = 10 ** p
     n = d * i + sign * r
     g = get_gcd(n, d)
     return int(n/g), int(d/g)
 
+
+def check_periodic(f):
+    for n in range(2, gv.MAX_N_FOR_PERIODIC_CHECK):
+        if f * n == int(n * f):
+            return n
+    return 0
 
 infinite_rational = Rational('1/0')
 no_solution_rational = Rational('0/0')
