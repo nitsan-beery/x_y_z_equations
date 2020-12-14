@@ -24,6 +24,8 @@ class EquationsWindow:
         self.label_equal = []
         self.label_empty = []
         self.label_row = []
+        self.label_empty_21 = None
+        self.label_n = None
 
         self.frame_1_output = tk.Frame(self.window_main)
         self.frame_1_output.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
@@ -32,13 +34,15 @@ class EquationsWindow:
         self.frame_3_buttons = tk.Frame(self.window_main)
         self.frame_3_buttons.pack(side=tk.TOP, fill=tk.BOTH, ipady=6)
 
+        self.label_empty_11 = tk.Label(self.frame_1_output, text='')
+        self.label_empty_11.grid(row=0, column=0, pady=5, ipady=3)
         self.entry_answer = tk.Entry(self.frame_1_output, text='', bg='#FFFFCC')
-        self.entry_answer.grid(row=0, column=0, padx=5, pady=5, ipady=3)
+        self.entry_answer.grid(row=0, column=1, ipady=3)
         combo_values = []
         for i in range(2, gv.MAX_MATRIX_SIZE+1):
             combo_values.append(f'{i} x {i}')
         self.combo_nxn = ttk.Combobox(self.frame_1_output, values=combo_values, width=4)
-        self.combo_nxn.grid(row=0, column=1, padx=3, ipady=1)
+        self.combo_nxn.grid(row=0, column=2, padx=5, ipady=1)
         self.combo_nxn.current(gv.MATRIX_SIZE-2)
         self.combo_nxn.bind("<<ComboboxSelected>>", self.change_nxn_event)
 
@@ -68,7 +72,7 @@ class EquationsWindow:
     def set_window_nxn(self, n=gv.MATRIX_SIZE):
         self.set_matrix_nxn(n)
 
-        width = 270 + 57 * (gv.MATRIX_SIZE-2)
+        width = 275 + 57 * (gv.MATRIX_SIZE-2)
         height = 200 + 44 * (gv.MATRIX_SIZE-2)
         self.window_main.geometry(f'{width}x{height}')
         
@@ -83,7 +87,7 @@ class EquationsWindow:
             self.label_name_x[i].grid(row=1, column=2*i+1)
         self.label_n.grid(row=1, column=2*gv.MATRIX_SIZE+1)
 
-        self.entry_answer.config(width=34+9*(gv.MATRIX_SIZE-2))
+        self.entry_answer.config(width=35+round(9.4*(gv.MATRIX_SIZE-2)))
 
         for row in range(0, gv.MATRIX_SIZE):
             self.label_empty[row] = tk.Label(self.frame_2_input, text='')
@@ -99,24 +103,6 @@ class EquationsWindow:
             self.label_equal[row].grid(row=2*(row+1), column=2*gv.MATRIX_SIZE, padx=5)
             self.entry_n[row] = tk.Entry(self.frame_2_input, width=gv.X_ENTRY_SIZE)
             self.entry_n[row].grid(row=2*(row+1), column=2*gv.MATRIX_SIZE+1, padx=5)
-
-    # change matrix size if n != 0
-    def reset(self, n=0):
-        if n > 0:
-            self.set_window_nxn(n)
-        self.clear_entries()
-        self.solution = gv.no_solution
-        self.entry_x[0][0].focus_set()
-        self.entry_x[0][0].selection_range(0, tk.END)
-
-    def clear_entries(self):
-        for row in range(0, gv.MATRIX_SIZE):
-            for col in range(0, gv.MATRIX_SIZE):
-                self.entry_x[row][col].delete(0, tk.END)
-                self.entry_x[row][col].insert(0, 0)
-            self.entry_n[row].delete(0, tk.END)
-            self.entry_n[row].insert(0, 0)
-        self.entry_answer.delete(0, tk.END)
 
     def set_matrix_nxn(self, n):
         for widget in self.frame_2_input.winfo_children():
@@ -140,6 +126,24 @@ class EquationsWindow:
             self.label_empty.append(None)
             self.label_row.append(None)
         gv.MATRIX_SIZE = n
+
+    # change matrix size if n != 0
+    def reset(self, n=0):
+        if n > 0:
+            self.set_window_nxn(n)
+        self.clear_entries()
+        self.solution = gv.no_solution
+        self.entry_x[0][0].focus_set()
+        self.entry_x[0][0].selection_range(0, tk.END)
+
+    def clear_entries(self):
+        for row in range(0, gv.MATRIX_SIZE):
+            for col in range(0, gv.MATRIX_SIZE):
+                self.entry_x[row][col].delete(0, tk.END)
+                self.entry_x[row][col].insert(0, 0)
+            self.entry_n[row].delete(0, tk.END)
+            self.entry_n[row].insert(0, 0)
+        self.entry_answer.delete(0, tk.END)
 
     def change_nxn_event(self, event):
         values = self.combo_nxn['values']
