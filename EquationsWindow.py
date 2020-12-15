@@ -15,7 +15,7 @@ def toggle(b):
 class EquationsWindow:
     def __init__(self):
         self.window_main = tk.Tk(className=' Equations Solver')
-        self.window_main.resizable(0, 0)
+        self.window_main.resizable(1, 0)
 
         self.label_name_x = []
         self.entry_x = []
@@ -35,14 +35,14 @@ class EquationsWindow:
         self.frame_3_buttons.pack(side=tk.TOP, fill=tk.BOTH, ipady=6)
 
         self.label_empty_11 = tk.Label(self.frame_1_output, text='')
-        self.label_empty_11.grid(row=0, column=0, pady=5, ipady=3)
+        self.label_empty_11.pack(side=tk.LEFT, pady=5, ipady=3)
         self.entry_answer = tk.Entry(self.frame_1_output, text='', bg='#FFFFCC')
-        self.entry_answer.grid(row=0, column=1, ipady=3)
+        self.entry_answer.pack(side=tk.LEFT, ipady=3, fill='x', expand=True)
         combo_values = []
         for i in range(2, gv.MAX_MATRIX_SIZE+1):
             combo_values.append(f'{i} x {i}')
         self.combo_nxn = ttk.Combobox(self.frame_1_output, values=combo_values, width=4)
-        self.combo_nxn.grid(row=0, column=2, padx=5, ipady=1)
+        self.combo_nxn.pack(side=tk.RIGHT, ipady=1, padx=5)
         self.combo_nxn.current(gv.MATRIX_SIZE-2)
         self.combo_nxn.bind("<<ComboboxSelected>>", self.change_nxn_event)
 
@@ -51,7 +51,7 @@ class EquationsWindow:
         self.label_empty_31 = tk.Label(self.frame_3_buttons, text='')
         self.button_solve = tk.Button(self.frame_3_buttons, text='Solve', width=4, bg='#CCFFCC', command=self.solve)
         self.button_reset = tk.Button(self.frame_3_buttons, text='Reset', width=4, bg='#F9C7C7', command=self.reset)
-        self.button_fraction = tk.Button(self.frame_3_buttons, text='m(n/q)', width=6, command=self.switch_fraction_type)
+        self.button_fraction = tk.Button(self.frame_3_buttons, text='1(n/d)', width=6, command=self.switch_fraction_type)
         self.button_steps = tk.Button(self.frame_3_buttons, text='show steps', width=8, command=self.switch_show_steps_mode)
 
         self.label_empty_31.pack(side=tk.TOP)
@@ -86,8 +86,6 @@ class EquationsWindow:
             self.label_name_x[i] = tk.Label(self.frame_2_input, text=name_x[i].capitalize(), padx=5)
             self.label_name_x[i].grid(row=1, column=2*i+1)
         self.label_n.grid(row=1, column=2*gv.MATRIX_SIZE+1)
-
-        self.entry_answer.config(width=35+round(9.4*(gv.MATRIX_SIZE-2)))
 
         for row in range(0, gv.MATRIX_SIZE):
             self.label_empty[row] = tk.Label(self.frame_2_input, text='')
