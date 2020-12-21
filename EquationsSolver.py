@@ -9,7 +9,6 @@ def solve_equations(x):
         if gv.show_steps:
             print_matrix(x)
         ref = col
-        t = x[ref][ref]
         if x[ref][ref] == 0:
             r = find_non_zero_row(x, ref)
             # can't find row

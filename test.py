@@ -11,9 +11,9 @@ def test():
 
 
 def test_operator():
-    f1 = Rational('12345123451234512345123451234512345123451234512345123451234512345123451234512345')
-    f2 = f1 * '2/3'
-    f3 = f2 / f1
+    f1 = Rational('2/3')
+    f2 = Rational(2/3)
+    f3 = f1 == f2
     print(f3)
 
 
@@ -50,7 +50,7 @@ def test_big_matrix():
 
 
 def test_fraction_matrix():
-    n = 10
+    n = 15
     gv.MATRIX_SIZE = n
     d = []
     r = []
@@ -58,6 +58,7 @@ def test_fraction_matrix():
         cd = []
         cr = []
         for col in range(0, n):
+            #cd.append((row / (col + 1) ** 2) ** 7 - (row * col - 11) ** 6)
             cd.append((row + col) ** 7 - (row - col - 11) ** 6)
             #cd.append(1/(row+1+col))
             cr.append(None)
@@ -212,7 +213,8 @@ def check_result(n, x, r):
         result_row = r[0][0] * x[row][0]
         for col in range(1, n):
             result_row += r[col][col] * x[row][col]
-        result.append(f'{result_row}')
+        result_row -= x[row][-1]
+        result.append(f'{abs(result_row)}')
     result.append(f'max {max_digits} digits')
     return result
 
