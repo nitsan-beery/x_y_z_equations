@@ -74,12 +74,12 @@ def test_fraction_matrix():
     td = copy_matrix(n, d)
     tr = copy_matrix(n, r)
     td = solve_equations(td)
-    result_d = check_result(n, d, td)
     print('double:   ' + get_solution_string(td, spaces=2))
+    result_d = check_result(n, d, td)
     print(result_d)
     tr = solve_equations(tr)
-    result_r = check_result(n, r, tr)
     print('fraction: ' + get_solution_string(tr, spaces=2))
+    result_r = check_result(n, r, tr)
     print(result_r)
 
 
@@ -194,6 +194,13 @@ def check_result(n, x, r):
         for row in range(n):
             if r[row][row] is infinite_rational:
                 r[row][row] = Rational(0)
+                for col in range(n):
+                    f = r[col][row]
+                    if len(str(abs(f.numerator))) > max_digits:
+                        max_digits = len(str(abs(f.numerator)))
+                    if len(str(abs(f.denominator))) > max_digits:
+                        max_digits = len(str(abs(f.denominator)))
+
     for row in range(0, n):
         if type(r[row][row]) is Rational:
             if len(str(r[row][row].numerator)) > max_digits:
