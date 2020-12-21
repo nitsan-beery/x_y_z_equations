@@ -12,13 +12,18 @@ class Rational:
         g = get_gcd(self.numerator, self.denominator)
         if g == 1:
             return
-        if len(str(g)) > gv.MAX_DIGITS_IN_FLOAT:
+        if len(str(abs(g))) >= gv.MAX_DIGITS_IN_FLOAT:
             self.numerator = div_large_denominator(self.numerator, g)
             self.denominator = div_large_denominator(self.denominator, g)
-            #print(f"Too big GCD {g} - {len(str(g))} digits")
         else:
-            self.numerator = div_large_number(self.numerator, g)
-            self.denominator = div_large_number(self.denominator, g)
+            if len(str(abs(self.numerator))) >= gv.MAX_DIGITS_IN_FLOAT:
+                self.numerator = div_large_numerator(self.numerator, g)
+            else:
+                self.numerator = int(self.numerator / g)
+            if len(str(abs(self.denominator))) >= gv.MAX_DIGITS_IN_FLOAT:
+                self.denominator = div_large_numerator(self.denominator, g)
+            else:
+                self.denominator = int(self.denominator / g)
 
     def is_valid(self):
         return self.denominator != 0
@@ -26,28 +31,28 @@ class Rational:
     def __str__(self):
         n = self.numerator
         d = self.denominator
-        if len(str(d)) > gv.MAX_DIGITS_IN_FLOAT:
-            whole_n = div_large_denominator(n, d)
-        else:
-            whole_n = div_large_number(n, d)
-        mod_n = n % d
-        if n < 0:
-            mod_n = d - mod_n
         if d == 0:
             return f"{n}/{d}"
         if n == 0:
             return "0"
-        elif d == 1:
+        if d == 1:
             return f"{n}"
+        if len(str(d)) > gv.MAX_DIGITS_IN_FLOAT:
+            whole_n = div_large_denominator(n, d)
+        else:
+            whole_n = div_large_numerator(n, d)
+        mod_n = n % d
+        if n < 0:
+            mod_n = d - mod_n
         str_num = str(whole_n)
         if whole_n == 0 and n < 0:
             str_num = '-0'
-        if gv.MAX_DIGITS_TO_SHOW_FRACTION < len(str(d)) < gv.MAX_DIGITS_IN_FLOAT:
+        if gv.MAX_DIGITS_TO_SHOW_FRACTION < len(str(d)):
             # +1 is to avoid 1.32e-5 instead of 0.0000132
             mod_n = mod_n / d + 1
             str_num += f'.{str(mod_n)[2:gv.FLOAT_SHOW_DIGITS+2]}...'
             return str_num
-        if abs(n) > d and gv.show_int_above_1 and whole_n != 0:
+        if abs(n) > d and gv.show_int_above_1 and whole_n != 0 and mod_n != 0:
             return f"{whole_n}({mod_n}/{d})"
         return f"{n}/{d}"
 
@@ -259,13 +264,15 @@ def check_periodic(f):
     return 0
 
 
-# return int(n/m)
-def div_large_number(n, d):
+# return the int of n/d 
+# len(d) must be less than gv.MAX_DIGITS_IN_FLOAT
+def div_large_numerator(n, d):
     big_n = 0
     sign = 1
-    if n < 0:
+    if (n < 0 and d > 0) or (n > 0 and d < 0):
         sign = -1
     n = abs(n)
+    d = abs(d)
     while len(str(n)) > gv.MAX_DIGITS_IN_FLOAT:
         chunk = int(str(n)[:gv.MAX_DIGITS_IN_FLOAT])
         r = int(str(n)[gv.MAX_DIGITS_IN_FLOAT:])
@@ -279,6 +286,7 @@ def div_large_number(n, d):
 
 
 # return the int of n/d
+# should use this when len(d) is greater than gv.MAX_DIGITS_IN_FLOAT
 def div_large_denominator(n, d):
     sign = 1
     if (n < 0 and d > 0) or (n > 0 and d < 0):
@@ -291,7 +299,7 @@ def div_large_denominator(n, d):
     result = 0
     while dif > 0:
         if (result + dif) * d > n:
-            dif = div_large_number(dif, 2)
+            dif = div_large_numerator(dif, 2)
         else:
             result += dif
     return result * sign

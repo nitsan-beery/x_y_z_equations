@@ -11,9 +11,10 @@ def test():
 
 
 def test_operator():
-    f1 = Rational(2/3)
-    f2 = Rational(3/5)
-    print(f'{f1/f2}')
+    f1 = Rational('12345123451234512345123451234512345123451234512345123451234512345123451234512345')
+    f2 = f1 * '2/3'
+    f3 = f2 / f1
+    print(f3)
 
 
 def test_big_matrix():
@@ -49,7 +50,7 @@ def test_big_matrix():
 
 
 def test_fraction_matrix():
-    n = 7
+    n = 10
     gv.MATRIX_SIZE = n
     d = []
     r = []
@@ -69,15 +70,15 @@ def test_fraction_matrix():
         for col in range(0, n+1):
             r[row][col] = Rational(d[row][col])
     if not gv.show_steps:
-        print_matrix(d)
+        print_matrix(r)
     td = copy_matrix(n, d)
     tr = copy_matrix(n, r)
     td = solve_equations(td)
     result_d = check_result(n, d, td)
     print('double:   ' + get_solution_string(td, spaces=2))
     print(result_d)
-    result_r = check_result(n, r, tr)
     tr = solve_equations(tr)
+    result_r = check_result(n, r, tr)
     print('fraction: ' + get_solution_string(tr, spaces=2))
     print(result_r)
 
@@ -189,6 +190,10 @@ def test_n_matricies():
 def check_result(n, x, r):
     result = []
     max_digits = 0
+    if type(r[0][0]) is Rational:
+        for row in range(n):
+            if r[row][row] is infinite_rational:
+                r[row][row] = Rational(0)
     for row in range(0, n):
         if type(r[row][row]) is Rational:
             if len(str(r[row][row].numerator)) > max_digits:
@@ -200,16 +205,7 @@ def check_result(n, x, r):
         result_row = r[0][0] * x[row][0]
         for col in range(1, n):
             result_row += r[col][col] * x[row][col]
-        if type(result_row) is Rational:
-            result_row = result_row.numerator / result_row.denominator
-        p = round(result_row * 10 ** gv.PRECISION)
-        result.append(p / 10 ** gv.PRECISION)
-        '''
-        if result_row == x[row][-1]:
-            result.append(True)
-        else:
-            result.append(False)
-        '''
+        result.append(f'{result_row}')
     result.append(f'max {max_digits} digits')
     return result
 
