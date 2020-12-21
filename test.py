@@ -1,22 +1,115 @@
-import random
 from EquationsSolver import *
-
-
-def test_operator():
-    f = Rational(1/8000)
-    print(f)
+import random
 
 
 def test():
-    gv.show_steps = False
-    gv.SHOW_INT_ABOVE_1 = False
-
-    #test_matrix()
-    test_big_matrix()
+    test_fraction_matrix()
     #test_operator()
+    #test_n_matricies()
+    #test_big_matrix()
+    #test_fraction_1()
 
 
-def test_matrix():
+def test_operator():
+    f1 = Rational(2/3)
+    f2 = Rational(3/5)
+    print(f'{f1/f2}')
+
+
+def test_big_matrix():
+    n = 100
+    solve_rational = True
+    show_solution_rational = True
+    gv.MATRIX_SIZE = n
+    yd = []
+    yr = []
+    for row in range(0, n):
+        cd = []
+        cr = []
+        for col in range(0, n):
+            rnd = random.randint(0, 100)
+            cd.append(rnd)
+            cr.append(Rational(rnd))
+        rnd = random.randint(100, 200)
+        cd.append(rnd)
+        cr.append(Rational(rnd))
+        yd.append(cd)
+        yr.append(cr)
+    if not gv.show_steps:
+        print_matrix(yr)
+    t = solve_equations(yd)
+    if show_solution_rational:
+        for row in range(0, n):
+            for col in range(0, n):
+                t[row][col] = Rational(t[row][col])
+    print(get_solution_string(t, spaces=2))
+    if solve_rational:
+        t = solve_equations(yr)
+        print(get_solution_string(t, spaces=2))
+
+
+def test_fraction_matrix():
+    n = 7
+    gv.MATRIX_SIZE = n
+    d = []
+    r = []
+    for row in range(0, n):
+        cd = []
+        cr = []
+        for col in range(0, n):
+            cd.append((row + col) ** 7 - (row - col - 11) ** 6)
+            #cd.append(1/(row+1+col))
+            cr.append(None)
+        cd.append((row ** 2 - row + 5) * 10000)
+        #cd.append(row+1)
+        cr.append(None)
+        d.append(cd)
+        r.append(cr)
+    for row in range(0, n):
+        for col in range(0, n+1):
+            r[row][col] = Rational(d[row][col])
+    if not gv.show_steps:
+        print_matrix(d)
+    td = copy_matrix(n, d)
+    tr = copy_matrix(n, r)
+    td = solve_equations(td)
+    result_d = check_result(n, d, td)
+    print('double:   ' + get_solution_string(td, spaces=2))
+    print(result_d)
+    result_r = check_result(n, r, tr)
+    tr = solve_equations(tr)
+    print('fraction: ' + get_solution_string(tr, spaces=2))
+    print(result_r)
+
+
+def test_fraction_1():
+    gv.show_steps = True
+    gv.MAX_DIGITS_TO_SHOW_FRACTION = 12
+    n = 2
+    m = [
+        [57, 67, 167, 1],
+        [3, 36, 181, 7/11],
+        [1, 2, 3, 4],
+        [-1, 3, -4, 7],
+    ]
+    gv.MATRIX_SIZE = n
+    d = []
+    r = []
+    for row in range(0, n):
+        cd = []
+        cr = []
+        for col in range(0, n+1):
+            cd.append(m[row][col])
+            cr.append(Rational(m[row][col]))
+        d.append(cd)
+        r.append(cr)
+    td = solve_equations(d)
+    tr = solve_equations(r)
+    print('double:   ' + get_solution_string(td, spaces=2))
+    print('fraction: ' + get_solution_string(tr, spaces=2))
+
+
+def test_n_matricies():
     gv.MATRIX_SIZE = 3
     m = [
         [
@@ -93,20 +186,39 @@ def test_matrix():
         print(f'{i+1}: {result} -> {get_solution_string(t)}')
 
 
-def test_big_matrix():
-    n = 50
-    gv.MATRIX_SIZE = n
-    y = []
+def check_result(n, x, r):
+    result = []
+    max_digits = 0
     for row in range(0, n):
-        c = []
-        for col in range(0, n):
-            c.append(Rational(random.randint(0, 100)))
-            if random.randint(0, 1):
-                c[-1] *= -1
-        c.append(Rational(random.randint(101, 999)))
-        y.append(c)
-    if not gv.show_steps:
-        print_matrix(y)
-    t = solve_equations(y)
-    print(get_solution_string(t, spaces=2))
+        if type(r[row][row]) is Rational:
+            if len(str(r[row][row].numerator)) > max_digits:
+                max_digits = len(str(r[row][row].numerator))
+            if len(str(r[row][row].denominator)) > max_digits:
+                max_digits = len(str(r[row][row].denominator))
+        elif len(str(r[row][row])) > max_digits:
+            max_digits = len(str(r[row][row]))
+        result_row = r[0][0] * x[row][0]
+        for col in range(1, n):
+            result_row += r[col][col] * x[row][col]
+        if type(result_row) is Rational:
+            result_row = result_row.numerator / result_row.denominator
+        p = round(result_row * 10 ** gv.PRECISION)
+        result.append(p / 10 ** gv.PRECISION)
+        '''
+        if result_row == x[row][-1]:
+            result.append(True)
+        else:
+            result.append(False)
+        '''
+    result.append(f'max {max_digits} digits')
+    return result
 
+
+def copy_matrix(n, origin):
+    m = []
+    for i in range(n):
+        m_row = []
+        for j in range(n+1):
+            m_row.append(origin[i][j])
+        m.append(m_row.copy())
+    return m

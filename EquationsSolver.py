@@ -9,6 +9,7 @@ def solve_equations(x):
         if gv.show_steps:
             print_matrix(x)
         ref = col
+        t = x[ref][ref]
         if x[ref][ref] == 0:
             r = find_non_zero_row(x, ref)
             # can't find row
@@ -34,7 +35,7 @@ def solve_equations(x):
     result_array = []
     xi_result_vector = []
     for i in range(0, gv.MATRIX_SIZE):
-        xi_result_vector.append(Rational(0))
+        xi_result_vector.append(0)
     for i in range(0, gv.MATRIX_SIZE):
         result_array.append(xi_result_vector.copy())
 
@@ -88,7 +89,6 @@ def get_solution_string(result_array, spaces=5):
     for i in range(0, spaces):
         space += ' '
     for i in range(0, gv.MATRIX_SIZE):
-        result_i = ''
         if result_array[i][i] == infinite_rational:
             result_i = gv.infinite
         else:
