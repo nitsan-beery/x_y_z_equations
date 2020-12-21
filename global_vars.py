@@ -1,8 +1,8 @@
 
-test_mode = True
+test_mode = False
 debug_mode = False
 
-show_int_above_1 = False
+show_int_above_1 = True
 show_steps = False
 
 MATRIX_SIZE = 2
