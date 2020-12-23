@@ -308,21 +308,30 @@ def check_periodic(f):
 
 
 # return the int of n/d
-# len(d) must be less than gv.MAX_DIGITS_IN_FLOAT
-def div_large_numerator(n, d):
+def div_large_number(n, d):
     if n != int(n) or d != int(d):
-        return int(n / d)
-    if str(n).count('e') > 0:
-        return int(n / d)
-    if len(str(n)) <= gv.MAX_DIGITS_IN_FLOAT:
-        return int(n / d)
-    n = int(n)
-    d = int(d)
+        return int(n/d)
     sign = 1
     if (n < 0 and d > 0) or (n > 0 and d < 0):
         sign = -1
-    n = abs(n)
-    d = abs(d)
+    n = abs(int(n))
+    d = abs(int(d))
+    if n < d:
+        return 0
+    if len(str(n)) <= gv.MAX_DIGITS_IN_FLOAT:
+        return int(n/d) * sign
+    if len(str(d)) > gv.MAX_DIGITS_IN_FLOAT:
+        return div_via_denominator(n, d, sign)
+    complex_n = len(str(n))
+    complex_d = math.log(10 ** (complex_n - len(str(d))), 2)
+    if complex_d < complex_n:
+        return div_via_denominator(n, d, sign)
+    return div_via_numerator(n, d, sign)
+
+
+# return the int of n/d
+# don't call this function directly. use div_large_number
+def div_via_numerator(n, d, sign=1):
     result = 0
     mod_n = 0
     for digit in str(n):
@@ -333,25 +342,13 @@ def div_large_numerator(n, d):
 
 
 # return the int of n/d
-def div_large_number(n, d):
-    if n != int(n) or d != int(d):
-        return int(n/d)
-    if len(str(d)) < gv.MAX_DIGITS_IN_FLOAT and str(d).count('e') == 0:
-        return div_large_numerator(n, d)
-    n = int(n)
-    d = int(d)
-    sign = 1
-    if (n < 0 and d > 0) or (n > 0 and d < 0):
-        sign = -1
-    n = abs(n)
-    d = abs(d)
-    if n < d:
-        return 0
+# don't call this function directly. use div_large_number
+def div_via_denominator(n, d, sign):
     dif = 10 ** (int(len(str(n)) - len(str(d))) + 1)
     result = 0
     while dif > 0:
         if (result + dif) * d > n:
-            dif = div_large_numerator(dif, 2)
+            dif = div_via_numerator(dif, 2)
         else:
             result += dif
     return result * sign

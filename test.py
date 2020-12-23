@@ -3,16 +3,17 @@ import random
 
 
 def test():
-    test_operator()
-    #test_fraction()
+    #test_operator()
+    test_fraction()
     #test_random()
 
 
 def test_operator():
-    f1 = Rational(949659680863611900)
-    f2 = f1 * 4
-    f3 = f1 / f2
-    f4 = f1 / 32
+    f1 = Rational(1234512345123451234512340)
+    f2 = Rational(f'{f1}/4')
+    f3 = f2 * 4
+    f4 = f1 * f3
+    f5 = f4 / f3
     print(f4)
 
 
