@@ -1,5 +1,5 @@
 
-test_mode = False
+test_mode = True
 debug_mode = False
 
 show_int_above_1 = True
@@ -12,6 +12,7 @@ FLOAT_SHOW_DIGITS = 9
 MAX_DIGITS_TO_SHOW_FRACTION = 5
 PRECISION = 6
 MAX_DIGITS_IN_FLOAT = 16
+MAX_DIGITS_TO_ALLOW_INT = 150
 MAX_N_FOR_PERIODIC_CHECK = 97
 
 X_ENTRY_SIZE = 5
