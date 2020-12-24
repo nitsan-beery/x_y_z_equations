@@ -9,16 +9,21 @@ def test():
 
 
 def test_operator():
-    f1 = Rational(1234512345123451234512340)
-    f2 = Rational(f'{f1}/4')
-    f3 = f2 * 4
-    f4 = f1 * f3
-    f5 = f4 / f3
-    print(f4)
+    digits = 149
+    n = 5
+    n1 = int(n * 10 ** (digits-len(str(n))))
+    n2 = n1 + 12321
+    f1 = Rational(n1)
+    f2 = Rational(n2)
+    f3 = f1 + f2
+    f4 = f2 / 10
+    f5 = f4 * 5
+    f6 = f5 / f4
+    print(f2)
 
 
 def test_fraction():
-    n = 25
+    n = 50
     gv.MATRIX_SIZE = n
     dx = []
     rx = []
@@ -26,14 +31,14 @@ def test_fraction():
         cd = []
         cr = []
         for col in range(0, n):
-            #r = Rational(f'1/{row+1+col}')
+            r = Rational(f'1/{row+101+col}')
             #r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
-            r = Rational((row + col) ** 7 - (row - col - 11) ** 6)
+            #r = Rational((row + col) ** 7 - (row - col - 11) ** 6)
             d = r.numerator/r.denominator
             cr.append(r)
             cd.append(d)
-        #r = Rational(row+1)
-        r = Rational((row ** 2 - row + 5) * 10000)
+        r = Rational(row+1)
+        #r = Rational((row ** 2 - row + 5) * 10000)
         d = r.numerator/r.denominator
         cr.append(r)
         cd.append(d)
@@ -75,11 +80,11 @@ def test_double_vs_random_matrix(dx, rx):
     td = solve_equations(td)
     print('double:   ' + get_solution_string(td, spaces=2))
     result_d = check_result(dx, td)
-    print(result_d)
+    print_result(result_d)
     tr = solve_equations(tr)
     print('fraction: ' + get_solution_string(tr, spaces=2))
     result_r = check_result(rx, tr)
-    print(result_r)
+    print_result(result_r)
 
 
 def check_result(x, r):
@@ -112,10 +117,19 @@ def check_result(x, r):
             add = f1 * f2
             result_row += r[col][col] * x[row][col]
         result_row -= x[row][-1]
-        result.append(f'{abs(result_row)}')
-    result.append(f'max {max_digits} digits')
+        result.append(abs(result_row))
+    result.append(max_digits)
     return result
 
+
+def print_result(r):
+    err = r[0]
+    err_vector = f'{r[0]}   '
+    for i in range(1, len(r) - 1):
+        err += r[i]
+        err_vector += f'{r[i]}   '
+    print(err_vector)
+    print(f'total error: {err}   max digits: {r[-1]}')
 
 def copy_matrix(origin):
     n = len(origin)

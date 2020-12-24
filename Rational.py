@@ -323,7 +323,8 @@ def div_large_number(n, d):
     if len(str(d)) > gv.MAX_DIGITS_IN_FLOAT:
         return div_via_denominator(n, d, sign)
     complex_n = len(str(n))
-    complex_d = math.log(10 ** (complex_n - len(str(d))), 2)
+    dif = complex_n - len(str(d))
+    complex_d = 2 * math.log(10 ** dif, 2)
     if complex_d < complex_n:
         return div_via_denominator(n, d, sign)
     return div_via_numerator(n, d, sign)
@@ -348,7 +349,10 @@ def div_via_denominator(n, d, sign):
     result = 0
     while dif > 0:
         if (result + dif) * d > n:
-            dif = div_via_numerator(dif, 2)
+            if len(str(dif)) < gv.MAX_DIGITS_IN_FLOAT:
+                dif = int(dif/2)
+            else:
+                dif = div_via_numerator(dif, 2)
         else:
             result += dif
     return result * sign
