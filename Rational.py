@@ -16,10 +16,11 @@ class Rational:
 
         # for testing
         # -----------------------------------------------------------
-        if type(self.numerator) is int and len(str(abs(self.numerator))) > gv.rational_largest_digits:
-            gv.rational_largest_digits = len(str(abs(self.numerator)))
-        if type(self.denominator) is int and len(str(abs(self.denominator))) > gv.rational_largest_digits:
-            gv.rational_largest_digits = len(str(abs(self.denominator)))
+        if gv.test_mode:
+            if type(self.numerator) is int and len(str(abs(self.numerator))) > gv.rational_largest_digits:
+                gv.rational_largest_digits = len(str(abs(self.numerator)))
+            if type(self.denominator) is int and len(str(abs(self.denominator))) > gv.rational_largest_digits:
+                gv.rational_largest_digits = len(str(abs(self.denominator)))
         # -----------------------------------------------------------
 
         g = get_gcd(self.numerator, self.denominator)

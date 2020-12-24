@@ -12,8 +12,8 @@ def test():
         gv.MAX_DIGITS_TO_ALLOW_INT = gv.MAX_DIGITS_IN_FLOAT
 
     #test_operator()
-    test_fraction()
-    #test_random()
+    #test_fraction()
+    test_random()
 
 
 def test_operator():
@@ -37,12 +37,12 @@ def test_fraction():
     for row in range(0, n):
         cr = []
         for col in range(0, n):
-            r = Rational(f'1/{row+101+col}')
-            #r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
-            #r = Rational((row + col) ** 30 - (row - col - 11) ** 6)
+            #r = Rational(f'1/{row+101+col}')
+            r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
+            #r = Rational((row + col) ** 15 - (row - col - 11) ** 6)
             cr.append(r)
-        r = Rational(row+1)
-        #r = Rational((row ** 2 - row + 5) * 10000)
+        #r = Rational(row+1)
+        r = Rational((row ** 2 - row + 5) * 10000)
         cr.append(r)
         rx.append(cr)
     if not gv.show_steps:
@@ -51,16 +51,14 @@ def test_fraction():
 
 
 def test_random():
-    n = 5
+    n = 30
     gv.MATRIX_SIZE = n
     rx = []
     for row in range(0, n):
         cr = []
-        for col in range(0, n):
-            rnd = random.randint(0, 100)
+        for col in range(0, n+1):
+            rnd = random.randint(0, 10000)
             cr.append(Rational(rnd))
-        rnd = random.randint(100, 200)
-        cr.append(Rational(rnd))
         rx.append(cr)
     if not gv.show_steps:
         print_matrix(rx)
