@@ -1,8 +1,16 @@
 from EquationsSolver import *
 import random
 
+show_steps = False
+round_int = True
+
 
 def test():
+    gv.show_steps = show_steps
+    gv.ROUND_INT = round_int
+    if round_int:
+        gv.MAX_DIGITS_TO_ALLOW_INT = gv.MAX_DIGITS_IN_FLOAT
+
     #test_operator()
     test_fraction()
     #test_random()
@@ -23,68 +31,92 @@ def test_operator():
 
 
 def test_fraction():
-    n = 50
+    n = 30
     gv.MATRIX_SIZE = n
-    dx = []
     rx = []
     for row in range(0, n):
-        cd = []
         cr = []
         for col in range(0, n):
             r = Rational(f'1/{row+101+col}')
             #r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
-            #r = Rational((row + col) ** 7 - (row - col - 11) ** 6)
-            d = r.numerator/r.denominator
+            #r = Rational((row + col) ** 30 - (row - col - 11) ** 6)
             cr.append(r)
-            cd.append(d)
         r = Rational(row+1)
         #r = Rational((row ** 2 - row + 5) * 10000)
-        d = r.numerator/r.denominator
         cr.append(r)
-        cd.append(d)
-
-        dx.append(cd)
         rx.append(cr)
     if not gv.show_steps:
         print_matrix(rx)
-    test_double_vs_random_matrix(dx, rx)
+    test_double_vs_random_matrix(rx)
 
 
 def test_random():
-    n = 10
+    n = 5
     gv.MATRIX_SIZE = n
-    dx = []
     rx = []
     for row in range(0, n):
-        cd = []
         cr = []
         for col in range(0, n):
             rnd = random.randint(0, 100)
-            cd.append(rnd)
             cr.append(Rational(rnd))
         rnd = random.randint(100, 200)
-        cd.append(rnd)
         cr.append(Rational(rnd))
-        dx.append(cd)
         rx.append(cr)
     if not gv.show_steps:
         print_matrix(rx)
-    td = copy_matrix(dx)
-    tr = copy_matrix(rx)
-    test_double_vs_random_matrix(td, tr)
+    test_double_vs_random_matrix(rx)
 
 
-def test_double_vs_random_matrix(dx, rx):
+def test_double_vs_random_matrix(rx):
+    dx = copy_matrix(rx)
+    convert_matrix_to_float(dx)
     td = copy_matrix(dx)
     tr = copy_matrix(rx)
+    if gv.err is not None:
+        if gv.ROUND_INT:
+            gv.err += ' -> change ROUND_INT to False'
+        print('exception before solving - ' + gv.err)
+        gv.err = None
+        return
+    if gv.is_rational_converted_to_float:
+        print('before solving - rational converted to float')
+        gv.is_rational_converted_to_float = False
     td = solve_equations(td)
-    print('double:   ' + get_solution_string(td, spaces=2))
+    print('double:\n' + get_solution_string(td, spaces=2))
     result_d = check_result(dx, td)
-    print_result(result_d)
+    dev_d = print_result(result_d)
     tr = solve_equations(tr)
-    print('fraction: ' + get_solution_string(tr, spaces=2))
+    if gv.err is not None:
+        print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        print('exception while solving - ' + gv.err)
+        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
+        gv.err = None
+    max_digits = gv.rational_largest_digits
+    print('\nfraction:')
+    if gv.is_rational_converted_to_float:
+        print('----------------------------------------------')
+        print('while solving - rational converted to float')
+        print('----------------------------------------------')
+        gv.is_rational_converted_to_float = False
+    print(get_solution_string(tr, spaces=2))
     result_r = check_result(rx, tr)
-    print_result(result_r)
+    if gv.err is not None:
+        print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        print('exception while solving - ' + gv.err)
+        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
+    if gv.is_rational_converted_to_float:
+        print('----------------------------------------------')
+        print('while checking result - rational converted to float')
+        print('----------------------------------------------')
+    dev_r = print_result(result_r)
+    if dev_r == 0:
+        if dev_d == 0:
+            str_dev = '0'
+        else:
+            str_dev = 'inf'
+    elif dev_d != 0:
+        str_dev = dev_r / dev_d
+    print(f'\nr_deviation / d_deviation: {str_dev}\nmax rational digits: {max_digits}')
 
 
 def check_result(x, r):
@@ -110,12 +142,12 @@ def check_result(x, r):
                 max_digits = len(str(r[row][row].denominator))
         elif len(str(r[row][row])) > max_digits:
             max_digits = len(str(r[row][row]))
-        result_row = r[0][0] * x[row][0]
+        result_row = x[row][0] * r[0][0]
         for col in range(1, n):
-            f1 = r[col][col]
-            f2 = x[row][col]
+            f1 = x[row][col]
+            f2 = r[col][col]
             add = f1 * f2
-            result_row += r[col][col] * x[row][col]
+            result_row += add
         result_row -= x[row][-1]
         result.append(abs(result_row))
     result.append(max_digits)
@@ -123,13 +155,16 @@ def check_result(x, r):
 
 
 def print_result(r):
-    err = r[0]
-    err_vector = f'{r[0]}   '
+    dev = r[0]
+    dev_vector = f'{r[0]}   '
     for i in range(1, len(r) - 1):
-        err += r[i]
-        err_vector += f'{r[i]}   '
-    print(err_vector)
-    print(f'total error: {err}   max digits: {r[-1]}')
+        dev += r[i]
+        dev_vector += f'{r[i]}   '
+    print('row deviation: ' + dev_vector)
+    dev /= len(r)
+    print(f'average deviation: {dev}')
+    return dev
+
 
 def copy_matrix(origin):
     n = len(origin)

@@ -70,6 +70,14 @@ def replace_rows(x, m, n):
         x[m][col], x[n][col] = x[n][col], x[m][col]
 
 
+def convert_matrix_to_float(x):
+    n = len(x)
+    for row in range(n):
+        for col in range(n+1):
+            if x[row][col].denominator != 0:
+                x[row][col] = x[row][col].numerator / x[row][col].denominator
+
+
 def get_name_x():
     name_x = ['x', 'y', 'z']
     if gv.MATRIX_SIZE > 3:
