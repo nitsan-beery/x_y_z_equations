@@ -11,8 +11,8 @@ def test():
     if round_int:
         gv.MAX_DIGITS_TO_ALLOW_INT = gv.MAX_DIGITS_IN_FLOAT
 
-    #test_operator()
-    test_fraction()
+    test_operator()
+    #test_fraction()
     #test_random()
     #test_inf_and_no_solution()
 
@@ -22,9 +22,11 @@ def test_operator():
     n = 5
     n1 = int(n * 10 ** (digits-len(str(n))))
     n2 = n1 * 2
-    n1 = 12345123451234512345
-    n2 = 1234512345123451234512345
-    f1 = Rational(n1)
+    n1 = 1662744996979889724
+    n1 = 101
+    n2 = n1 + 5
+    f1 = Rational(f'{5}/{n1}')
+    print(f1)
     f2 = Rational(n2)
     n3 = n2/n1
     f3 = f2 / f1
@@ -36,18 +38,18 @@ def test_operator():
 
 
 def test_fraction():
-    n = 10
+    n = 18
     gv.MATRIX_SIZE = n
     rx = []
     for row in range(0, n):
         cr = []
         for col in range(0, n):
-            #r = Rational(f'1/{row+101+col}')
-            r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
+            r = Rational(f'1/{row+101+col}')
+            #r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
             #r = Rational((row + col) ** 15 - (row - col - 11) ** 6)
             cr.append(r)
-        #r = Rational(row+1)
-        r = Rational((row ** 2 - row + 5) * 10000)
+        r = Rational(row+1)
+        #r = Rational((row ** 2 - row + 5) * 10000)
         cr.append(r)
         rx.append(cr)
     if not gv.show_steps:
@@ -111,6 +113,7 @@ def test_double_vs_random_matrix(rx):
     print('double:\n' + get_solution_string(td, spaces=2))
     result_d = check_result(dx, td)
     dev_d = print_result(result_d)
+    gv.show_steps = True
     tr = solve_equations(tr)
     if gv.err is not None:
         print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -153,13 +156,6 @@ def check_result(x, r):
             r[row][row] = 0
 
     for row in range(0, n):
-        if type(r[row][row]) is Rational:
-            if len(str(r[row][row].numerator)) > max_digits:
-                max_digits = len(str(r[row][row].numerator))
-            if len(str(r[row][row].denominator)) > max_digits:
-                max_digits = len(str(r[row][row].denominator))
-        elif len(str(r[row][row])) > max_digits:
-            max_digits = len(str(r[row][row]))
         result_row = x[row][0] * r[0][0]
         for col in range(1, n):
             f1 = x[row][col]

@@ -70,7 +70,7 @@ class Rational:
         if whole_n == 0 and n < 0:
             str_num = '-0'
         if gv.MAX_DIGITS_TO_SHOW_FRACTION < len(str(d)):
-             # +1 is to avoid 1.32e-5 instead of 0.0000132
+            # +1 is to avoid 1.32e-5 instead of 0.0000132
             mod_n = mod_n / d + 1
             str_num += f'.{str(mod_n)[2:gv.PRECISION+2]}'
             return str_num
