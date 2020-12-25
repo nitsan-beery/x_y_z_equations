@@ -2,7 +2,7 @@ from EquationsSolver import *
 import random
 
 show_steps = False
-round_int = True
+round_int = False
 
 
 def test():
@@ -12,18 +12,23 @@ def test():
         gv.MAX_DIGITS_TO_ALLOW_INT = gv.MAX_DIGITS_IN_FLOAT
 
     #test_operator()
-    #test_fraction()
-    test_random()
+    test_fraction()
+    #test_random()
+    #test_inf_and_no_solution()
 
 
 def test_operator():
     digits = 149
     n = 5
     n1 = int(n * 10 ** (digits-len(str(n))))
-    n2 = n1 + 12321
+    n2 = n1 * 2
+    n1 = 12345123451234512345
+    n2 = 1234512345123451234512345
     f1 = Rational(n1)
     f2 = Rational(n2)
-    f3 = f1 + f2
+    n3 = n2/n1
+    f3 = f2 / f1
+
     f4 = f2 / 10
     f5 = f4 * 5
     f6 = f5 / f4
@@ -31,7 +36,7 @@ def test_operator():
 
 
 def test_fraction():
-    n = 30
+    n = 10
     gv.MATRIX_SIZE = n
     rx = []
     for row in range(0, n):
@@ -60,6 +65,29 @@ def test_random():
             rnd = random.randint(0, 10000)
             cr.append(Rational(rnd))
         rx.append(cr)
+    if not gv.show_steps:
+        print_matrix(rx)
+    test_double_vs_random_matrix(rx)
+
+
+def test_inf_and_no_solution():
+    n = 2
+    gv.MATRIX_SIZE = n
+    print('\nTest - no solution')
+    rx = [
+        [1, 1, 1],
+        [1, 1, 2]
+    ]
+    convert_matrix_to_rational(rx)
+    if not gv.show_steps:
+        print_matrix(rx)
+    test_double_vs_random_matrix(rx)
+    print('\nTest - infinite solution')
+    rx = [
+        [1, 1, 1],
+        [0, 0, 0]
+    ]
+    convert_matrix_to_rational(rx)
     if not gv.show_steps:
         print_matrix(rx)
     test_double_vs_random_matrix(rx)
@@ -102,17 +130,14 @@ def test_double_vs_random_matrix(rx):
         print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
         print('exception while solving - ' + gv.err)
         print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
-    if gv.is_rational_converted_to_float:
-        print('----------------------------------------------')
-        print('while checking result - rational converted to float')
-        print('----------------------------------------------')
     dev_r = print_result(result_r)
+    str_dev = 'inf'
     if dev_r == 0:
         if dev_d == 0:
             str_dev = '0'
         else:
             str_dev = 'inf'
-    elif dev_d != 0:
+    elif dev_d is not gv.no_solution and dev_d != 0:
         str_dev = dev_r / dev_d
     print(f'\nr_deviation / d_deviation: {str_dev}\nmax rational digits: {max_digits}')
 
@@ -121,16 +146,11 @@ def check_result(x, r):
     n = len(r)
     result = []
     max_digits = 0
-    if type(r[0][0]) is Rational:
-        for row in range(n):
-            if r[row][row] is infinite_rational:
-                r[row][row] = Rational(0)
-                for col in range(n):
-                    f = r[col][row]
-                    if len(str(abs(f.numerator))) > max_digits:
-                        max_digits = len(str(abs(f.numerator)))
-                    if len(str(abs(f.denominator))) > max_digits:
-                        max_digits = len(str(abs(f.denominator)))
+    if r[0][0] is no_solution_rational:
+        return [gv.no_solution]
+    for row in range(n):
+        if r[row][row] is infinite_rational:
+            r[row][row] = 0
 
     for row in range(0, n):
         if type(r[row][row]) is Rational:
@@ -154,6 +174,8 @@ def check_result(x, r):
 
 def print_result(r):
     dev = r[0]
+    if dev is gv.no_solution:
+        return dev
     dev_vector = f'{r[0]}   '
     for i in range(1, len(r) - 1):
         dev += r[i]
@@ -175,3 +197,26 @@ def copy_matrix(origin):
     return m
 
 
+def convert_matrix_to_float(x):
+    n = len(x)
+    for row in range(n):
+        for col in range(n+1):
+            if x[row][col].denominator != 0:
+                x[row][col] = x[row][col].numerator / x[row][col].denominator
+
+
+def convert_matrix_to_rational(x):
+    n = len(x)
+    for row in range(n):
+        for col in range(n+1):
+            x[row][col] = Rational(x[row][col])
+
+
+def get_none_matrix(n):
+    m = []
+    row_m = []
+    for col in range(n + 1):
+        row_m.append(None)
+    for row in range(n):
+        m.append(row_m)
+    return m
