@@ -72,6 +72,8 @@ class Rational:
         if gv.MAX_DIGITS_TO_SHOW_FRACTION < len(str(d)):
             # +1 is to avoid 1.32e-5 instead of 0.0000132
             mod_n = mod_n / d + 1
+            if mod_n == 1:
+                mod_n = str(10 ** (gv.PRECISION+3))[2:]
             str_num += f'.{str(mod_n)[2:gv.PRECISION+2]}'
             return str_num
         if abs(n) > abs(d) and gv.show_int_above_1 and whole_n != 0 and mod_n != 0:
