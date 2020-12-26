@@ -38,18 +38,18 @@ def test_operator():
 
 
 def test_fraction():
-    n = 18
+    n = 10
     gv.MATRIX_SIZE = n
     rx = []
     for row in range(0, n):
         cr = []
         for col in range(0, n):
-            r = Rational(f'1/{row+101+col}')
+            r = Rational(f'1/{row+100000001+col}')
             #r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
             #r = Rational((row + col) ** 15 - (row - col - 11) ** 6)
             cr.append(r)
-        r = Rational(row+1)
-        #r = Rational((row ** 2 - row + 5) * 10000)
+        #r = Rational(row+1)
+        r = Rational((row ** 2 - row + 5) * 10000)
         cr.append(r)
         rx.append(cr)
     if not gv.show_steps:
@@ -113,7 +113,7 @@ def test_double_vs_random_matrix(rx):
     print('double:\n' + get_solution_string(td, spaces=2))
     result_d = check_result(dx, td)
     dev_d = print_result(result_d)
-    gv.show_steps = True
+#    gv.show_steps = True
     tr = solve_equations(tr)
     if gv.err is not None:
         print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -134,15 +134,15 @@ def test_double_vs_random_matrix(rx):
         print('exception while solving - ' + gv.err)
         print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
     dev_r = print_result(result_r)
-    str_dev = 'inf'
+    r_d_dev = 'inf'
     if dev_r == 0:
         if dev_d == 0:
-            str_dev = '0'
+            r_d_dev = '0'
         else:
-            str_dev = 'inf'
+            r_d_dev = 'inf'
     elif dev_d is not gv.no_solution and dev_d != 0:
-        str_dev = dev_r / dev_d
-    print(f'\nr_deviation / d_deviation: {str_dev}\nmax rational digits: {max_digits}')
+        r_d_dev = float(dev_r / dev_d)
+    print(f'\nr_deviation / d_deviation: {r_d_dev}\nmax rational digits: {max_digits}')
 
 
 def check_result(x, r):

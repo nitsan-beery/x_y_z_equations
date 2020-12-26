@@ -219,6 +219,9 @@ class Rational:
         f.denominator = abs(self.denominator)
         return f
 
+    def __float__(self):
+        return self.numerator / self.denominator
+
 
 def get_gcd(p, q):
     if q == 0:
