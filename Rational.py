@@ -10,7 +10,13 @@ class Rational:
         self.reduce()
 
     def reduce(self):
+        if self.denominator == 0:
+            return
         if self.numerator == 0:
+            self.denominator = 1
+            return
+        if type(self.numerator) is float or type(self.denominator) is float:
+            self.numerator /= self.denominator
             self.denominator = 1
             return
 
@@ -42,7 +48,8 @@ class Rational:
             self.denominator = div_large_number(self.denominator, g)
 
     def is_valid(self):
-        return self.denominator != 0
+        return self != invalid_rational
+
 
     def is_int_too_large(self):
         if type(self.numerator) is int and len(str(abs(self.numerator))) > gv.MAX_DIGITS_TO_ALLOW_INT:
@@ -54,8 +61,12 @@ class Rational:
     def __str__(self):
         n = self.numerator
         d = self.denominator
-        if d == 0:
-            return f"{n}/{d}"
+        if not self.is_valid():
+            return "NAN"
+        if abs(self) == infinite_rational:
+            if n > 0:
+                return "INF"
+            return "-INF"
         if n == 0:
             return "0"
         if d == 1:
@@ -92,30 +103,51 @@ class Rational:
 
     def __gt__(self, other):
         f = Rational(other)
-        if self.denominator == 0 or f.denominator == 0:
+        if not self.is_valid() or not f.is_valid():
+            return False
+        if self == infinite_rational and f != infinite_rational:
+            return True
+        if self == -infinite_rational and f != -infinite_rational:
+            return False
+        if abs(f) == infinite_rational:
+            if f < 0:
+                return True
             return False
         return self.numerator/self.denominator > f.numerator/f.denominator
 
     def __ge__(self, other):
         f = Rational(other)
-        if self.denominator == 0 or f.denominator == 0:
+        if not self.is_valid() or not f.is_valid():
             return False
-        return self.numerator/self.denominator >= f.numerator/f.denominator
+        if self.__eq__(other):
+            return True
+        return self.__gt__(other)
 
     def __lt__(self, other):
         f = Rational(other)
-        if self.denominator == 0 or f.denominator == 0:
+        if not self.is_valid() or not f.is_valid():
             return False
-        return self.numerator/self.denominator < f.numerator/f.denominator
+        return not self.__gt__(other)
 
     def __le__(self, other):
         f = Rational(other)
-        if self.denominator == 0 or f.denominator == 0:
+        if not self.is_valid() or not f.is_valid():
             return False
-        return self.numerator/self.denominator <= f.numerator/f.denominator
+        if self.__eq__(other):
+            return True
+        return not self.__gt__(other)
 
     def __add__(self, other):
         f = Rational(other)
+        if not f.is_valid() or not self.is_valid():
+            return invalid_rational
+        elif abs(self) == infinite_rational:
+            if f == -self:
+                return invalid_rational
+            else:
+                return self
+        elif abs(f) == infinite_rational:
+            return f
         if f.numerator == 0:
             return self
         if self.numerator == 0:
@@ -123,10 +155,10 @@ class Rational:
         if f.denominator != 0 and self.denominator != 0:
             len_self_n = math.log(abs(self.numerator), 10) + 1
             len_self_d = math.log(abs(self.denominator), 10) + 1
-            len_f_n = math.log(abs(f.numerator), 10) + 1
-            len_f_d = math.log(abs(f.denominator), 10) + 1
-            if len_self_n + len_f_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_f_n > gv.MAX_DIGITS_TO_ALLOW_INT \
-                    or len_self_d + len_f_d > gv.MAX_DIGITS_TO_ALLOW_INT \
+            len_other_n = math.log(abs(f.numerator), 10) + 1
+            len_other_d = math.log(abs(f.denominator), 10) + 1
+            if len_self_n + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT \
+                    or len_self_d + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT \
                     or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
                 f.numerator = (self.numerator/self.denominator) + (f.numerator/f.denominator)
                 f.denominator = 1
@@ -138,6 +170,15 @@ class Rational:
 
     def __sub__(self, other):
         f = Rational(other)
+        if not f.is_valid() or not self.is_valid():
+            return invalid_rational
+        elif abs(self) == infinite_rational:
+            if f == self:
+                return invalid_rational
+            else:
+                return self
+        elif abs(f) == infinite_rational:
+            return -f
         if f.numerator == 0:
             return self
         if self.numerator == 0:
@@ -145,10 +186,10 @@ class Rational:
         if f.denominator != 0 and self.denominator != 0:
             len_self_n = math.log(abs(self.numerator), 10) + 1
             len_self_d = math.log(abs(self.denominator), 10) + 1
-            len_f_n = math.log(abs(f.numerator), 10) + 1
-            len_f_d = math.log(abs(f.denominator), 10) + 1
-            if len_self_n + len_f_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_f_n > gv.MAX_DIGITS_TO_ALLOW_INT \
-                    or len_self_d + len_f_d > gv.MAX_DIGITS_TO_ALLOW_INT \
+            len_other_n = math.log(abs(f.numerator), 10) + 1
+            len_other_d = math.log(abs(f.denominator), 10) + 1
+            if len_self_n + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT \
+                    or len_self_d + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT \
                     or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
                 f.numerator = (self.numerator/self.denominator) - (f.numerator/f.denominator)
                 f.denominator = 1
@@ -160,15 +201,29 @@ class Rational:
 
     def __mul__(self, other):
         f = Rational(other)
-        if f.denominator == 0 or self.denominator == 0:
-            return Rational('0/0')
+        if not f.is_valid() or not self.is_valid():
+            return invalid_rational
+        elif abs(self) == infinite_rational:
+            if f == 0 or f == -self:
+                return invalid_rational
+            else:
+                if (f > 0 and self > 0) or (f < 0 and self < 0):
+                    return infinite_rational
+                return -infinite_rational
+        elif abs(f) == infinite_rational:
+            if self == 0:
+                return invalid_rational
+            else:
+                if (f > 0 and self > 0) or (f < 0 and self < 0):
+                    return infinite_rational
+                return -infinite_rational
         if self.numerator == 0 or f.numerator == 0:
             return Rational(0)
         len_self_n = math.log(abs(self.numerator), 10) + 1
         len_self_d = math.log(abs(self.denominator), 10) + 1
-        len_f_n = math.log(abs(f.numerator), 10) + 1
-        len_f_d = math.log(abs(f.denominator), 10) + 1
-        if len_self_n + len_f_n > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_f_d > gv.MAX_DIGITS_TO_ALLOW_INT \
+        len_other_n = math.log(abs(f.numerator), 10) + 1
+        len_other_d = math.log(abs(f.denominator), 10) + 1
+        if len_self_n + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT \
                 or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
             f.numerator = (self.numerator / self.denominator) * (f.numerator / f.denominator)
             f.denominator = 1
@@ -180,15 +235,22 @@ class Rational:
 
     def __truediv__(self, other):
         f = Rational(other)
-        if f.denominator == 0 or self.denominator == 0 or f.numerator == 0:
-            return Rational('0/0')
-        if self.numerator == 0:
+        if not f.is_valid() or not self.is_valid() or f.numerator == 0:
+            return invalid_rational
+        elif abs(self) == infinite_rational:
+            if abs(f) == infinite_rational:
+                return invalid_rational
+            else:
+                if (f > 0 and self > 0) or (f < 0 and self < 0):
+                    return infinite_rational
+                return -infinite_rational
+        elif abs(f) == infinite_rational or self.numerator == 0:
             return Rational(0)
         len_self_n = math.log(abs(self.numerator), 10) + 1
         len_self_d = math.log(abs(self.denominator), 10) + 1
-        len_f_n = math.log(abs(f.numerator), 10) + 1
-        len_f_d = math.log(abs(f.denominator), 10) + 1
-        if len_self_n + len_f_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_f_n > gv.MAX_DIGITS_TO_ALLOW_INT \
+        len_other_n = math.log(abs(f.numerator), 10) + 1
+        len_other_d = math.log(abs(f.denominator), 10) + 1
+        if len_self_n + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT \
                 or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
             f.numerator = (self.numerator / self.denominator) / (f.numerator / f.denominator)
             f.denominator = 1
@@ -220,14 +282,24 @@ class Rational:
         return f
 
     def __float__(self):
+        if self == infinite_rational:
+            return float('inf')
+        elif self == invalid_rational:
+            return float('nan')
+        elif self.is_int_too_large():
+            len_n = len(str(abs(self.numerator)))
+            len_d = len(str(abs(self.denominator)))
+            sign = 1
+            if self < 0:
+                sign = -1
+            return sign * (10 ** len_n / 10 ** len_d)
         return self.numerator / self.denominator
 
 
 def get_gcd(p, q):
     if q == 0:
         return 1
-    if int(p) != p or int(q) != q:
-    #if type(p) is not int or type(q) is not int:
+    if type(p) is not int or type(q) is not int:
         return 1
     d = p % q
     while d:
@@ -280,17 +352,13 @@ def get_n_d_from_exp(exp):
 def get_n_d_from_float(exp):
     if str(exp).count('e') > 0:
         return exp, 1
-    '''
-    if str(exp).count('+') > 0:
-        return exp, 1
-    else:
-        pos = str(exp).find('e-')
-        exp_10 = int(str(exp)[pos+2:])
-        exp_10 += pos-2
-        exp_10 = 10 ** exp_10
-        exp = int(exp * exp_10)
-        return exp, exp_10
-    '''
+    if exp == float('inf') or exp == float('-inf'):
+        if exp > 0:
+            return 1, 0
+        else:
+            return -1, 0
+    if str(exp).lower() == 'nan':
+        return 0, 0
     if exp == int(exp):
     #if type(exp) is int:
         return int(exp), 1
@@ -378,4 +446,4 @@ def div_via_denominator(n, d, sign):
 
 
 infinite_rational = Rational('1/0')
-no_solution_rational = Rational('0/0')
+invalid_rational = Rational('0/0')

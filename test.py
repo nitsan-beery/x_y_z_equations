@@ -11,30 +11,25 @@ def test():
     if round_int:
         gv.MAX_DIGITS_TO_ALLOW_INT = gv.MAX_DIGITS_IN_FLOAT
 
-    #test_operator()
-    test_fraction()
+    test_operator()
+    #test_fraction()
     #test_random()
     #test_inf_and_no_solution()
 
 
 def test_operator():
     digits = 149
-    n = 5
-    n1 = int(n * 10 ** (digits-len(str(n))))
-    n2 = n1 * 2
-    n1 = 1662744996979889724
-    n1 = n1 + 5
-    n2 = n1 + 5
-    f1 = Rational(f'{n2}/{n1}')
-    print(f1)
-    f2 = Rational(n2)
-    n3 = n2/n1
-    f3 = f2 / f1
+    f1 = 1
+    f2 = -float('inf')
+    r1 = Rational(f1)
+    r2 = Rational(f2)
+    f3 = f2+f1
+    r3 = r2+r1
+    print(f'float: {f3}   rational: {r3}')
 
-    f4 = f2 / 10
-    f5 = f4 * 5
-    f6 = f5 / f4
-    print(f2)
+    if gv.is_rational_converted_to_float:
+        print('rational_converted_to_float')
+    print(f'err: {gv.err}')
 
 
 def test_fraction():

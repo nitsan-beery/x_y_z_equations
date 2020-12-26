@@ -41,7 +41,7 @@ def solve_equations(x):
     for row in range(0, gv.MATRIX_SIZE):
         if x[row][row] == 0:
             if x[row][-1] != 0:
-                result_array[0][0] = no_solution_rational
+                result_array[0][0] = invalid_rational
                 break
             result_array[row][row] = infinite_rational
         else:
@@ -80,7 +80,7 @@ def get_name_x():
 
 
 def get_solution_string(result_array, spaces=5):
-    if result_array[0][0] == no_solution_rational:
+    if result_array[0][0] == invalid_rational:
         return gv.no_solution
     name_x = get_name_x()
     result = ''
