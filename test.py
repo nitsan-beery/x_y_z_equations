@@ -18,18 +18,94 @@ def test():
 
 
 def test_operator():
-    digits = 149
-    f1 = 1
-    f2 = -float('inf')
+    inf = float('inf')
+    s_fail = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n' \
+             ' check   check   check   check   check\n' \
+             'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    m_no_zero = [(inf, inf), (1, inf), (inf, 1), (1, 1)]
+    m_with_zero = [(0, inf), (inf, 0), (0, 1), (1, 0)]
+    for pair in m_no_zero:
+        f1 = pair[0]
+        f2 = pair[1]
+        success = test_all_operators(f1, f2)
+        if not success:
+            print(s_fail)
+        f1 = -f1
+        success = test_all_operators(f1, f2)
+        if not success:
+            print(s_fail)
+        f1 = -f1
+        f2 = -f2
+        success = test_all_operators(f1, f2)
+        if not success:
+            print(s_fail)
+        f1 = -f1
+        success = test_all_operators(f1, f2)
+        if not success:
+            print(s_fail)
+    for pair in m_with_zero:
+        f1 = pair[0]
+        f2 = pair[1]
+        success = test_all_operators(f1, f2)
+        if not success:
+            print(s_fail)
+        if f1 == 0:
+            f2 = -f2
+        else:
+            f1 = -f1
+        success = test_all_operators(f1, f2)
+        if not success:
+            print(s_fail)
+    success = test_all_operators(0, 0)
+    if not success:
+        print(s_fail)
+
+
+def test_all_operators(f1, f2):
     r1 = Rational(f1)
     r2 = Rational(f2)
-    f3 = f2+f1
-    r3 = r2+r1
-    print(f'float: {f3}   rational: {r3}')
+    gt = r1 > r2
+    ge = r1 >= r2
+    lt = r1 < r2
+    le = r1 <= r2
+    eq = r1 == r2
+    f_plus = f1+f2
+    r_plus = r1+r2
+    f_minus = f1-f2
+    r_minus = r1-r2
+    f_mul = f1*f2
+    r_mul = r1*r2
+    if f2 != 0:
+        f_div = f1/f2
+    else:
+        f_div = float('nan')
+    r_div = r1/r2
+    t_plus = f_plus == r_plus
+    t_minus = f_minus == r_minus
+    t_mul = f_mul == r_mul
+    t_div = f_div == r_div
+    t_eq = eq == (f1 == f2)
+    t_gt = gt == (f1 > f2)
+    t_ge = ge == (f1 >= f2)
+    t_lt = lt == (f1 < f2)
+    t_le = le == (f1 <= f2)
+    print('')
+    print(f'r1: {r1}   r2: {r2}')
+    print(f'+   float: {f_plus}   rational: {r_plus}   | {t_plus}')
+    print(f'-   float: {f_minus}   rational: {r_minus}   | {t_minus}')
+    print(f'*   float: {f_mul}   rational: {r_mul}   | {t_mul}')
+    print(f'/   float: {f_div}   rational: {r_div}   | {t_div}')
+    print(f'r1 == r2: {eq}   | {t_eq}')
+    print(f'r1 > r2: {gt}   | {t_gt}')
+    print(f'r1 >= r2: {ge}   | {t_ge}')
+    print(f'r1 < r2: {lt}   | {t_lt}')
+    print(f'r1 <= r2: {le}   | {t_le}')
 
     if gv.is_rational_converted_to_float:
         print('rational_converted_to_float')
     print(f'err: {gv.err}')
+
+    return t_plus and t_minus and t_mul and t_div and t_eq and t_gt and t_ge and t_lt and t_le
 
 
 def test_fraction():
@@ -144,10 +220,10 @@ def check_result(x, r):
     n = len(r)
     result = []
     max_digits = 0
-    if r[0][0] is no_solution_rational:
+    if r[0][0] == Rational(gv.invalid_rational):
         return [gv.no_solution]
     for row in range(n):
-        if r[row][row] is infinite_rational:
+        if r[row][row] == Rational(gv.inf_rational):
             r[row][row] = 0
 
     for row in range(0, n):

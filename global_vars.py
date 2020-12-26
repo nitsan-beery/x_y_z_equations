@@ -21,6 +21,8 @@ X_ENTRY_SIZE = 5
 
 no_solution = 'No Solution'
 infinite = 'infinite'
+inf_rational = '1/0'
+invalid_rational = '0/0'
 
 err = None
 # for testing
