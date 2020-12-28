@@ -14,14 +14,14 @@ def test():
     #test_general()
     #test_operator()
     #test_periodic()
-    test_fraction()
+    #test_fraction()
     #test_random()
-    #test_inf_and_no_solution()
+    test_inf_and_no_solution()
 
 
 def test_general():
-    r1 = Rational('1/53')
-    r2 = Rational('-91/3')
+    r1 = Rational(gv.invalid_rational)
+    r2 = Rational(gv.inf_rational)
     r3 = r1 + r2
     print(r1, r2, r3)
 
@@ -165,7 +165,7 @@ def test_all_operators(f1, f2, show_result=False, precision=0):
 
 
 def test_fraction():
-    n = 10
+    n = 11
     gv.MATRIX_SIZE = n
     rx = []
     for row in range(0, n):
@@ -276,7 +276,8 @@ def check_result(x, r):
     n = len(r)
     result = []
     max_digits = 0
-    if r[0][0] == Rational(gv.invalid_rational):
+    f = Rational(gv.invalid_rational)
+    if r[0][0] == f:
         return [gv.no_solution]
     for row in range(n):
         if r[row][row] == Rational(gv.inf_rational):
@@ -305,7 +306,7 @@ def print_result(r):
         dev_vector += f'{r[i]}   '
     print('row deviation: ' + dev_vector)
     dev /= len(r)
-    print(f'average deviation: {dev}')
+    print(f'average deviation: {float(dev)}')
     return dev
 
 

@@ -41,9 +41,9 @@ def solve_equations(x):
     for row in range(0, gv.MATRIX_SIZE):
         if x[row][row] == 0:
             if x[row][-1] != 0:
-                result_array[0][0] = invalid_rational
+                result_array[0][0] = Rational(gv.invalid_rational)
                 break
-            result_array[row][row] = infinite_rational
+            result_array[row][row] = Rational(gv.inf_rational)
         else:
             result_array[row][row] = x[row][-1]
             for col in range(0, gv.MATRIX_SIZE):

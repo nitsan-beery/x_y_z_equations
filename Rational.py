@@ -7,13 +7,14 @@ class Rational:
         n, d = get_n_d_from_exp(exp, check_float)
         self.numerator = n
         self.denominator = d
-        if exp is not None:
-            if exp != gv.invalid_rational and not self.is_valid():
-                gv.err = 'invalid rational'
-            elif exp != gv.inf_rational and self.is_inf():
-                gv.err = 'inf rational'
-            elif type(n) is int:
-                self.reduce()
+        if exp is None or type(exp) is Rational or exp == gv.invalid_rational or exp == gv.inf_rational:
+            return
+        if not self.is_valid():
+            gv.err = 'invalid rational'
+        elif self.is_inf():
+            gv.err = 'inf rational'
+        elif type(n) is int:
+            self.reduce()
 
     def reduce(self):
         if type(self.numerator) is float or type(self.denominator) is float:
@@ -100,7 +101,7 @@ class Rational:
             return "0"
         if d == 1:
             return f"{n}"
-        if n != int(n) or d != int(d):
+        if type(n) is not int or type(d) is not int:
             return f"{n/d}"
         n = int(n)
         d = int(d)
@@ -110,6 +111,8 @@ class Rational:
         if whole_n == 0 and n < 0:
             str_num = '-0'
         if gv.MAX_DIGITS_TO_SHOW_FRACTION < len(str(d)):
+            if len(str_num) > gv.MAX_DIGITS_IN_FLOAT:
+                return f'{n/d}'
             # +1 is to avoid 1.32e-5 instead of 0.0000132
             mod_n = mod_n / d + 1
             if mod_n == 1:
