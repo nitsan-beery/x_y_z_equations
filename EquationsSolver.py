@@ -80,7 +80,7 @@ def get_name_x():
 
 
 def get_solution_string(result_array, spaces=5):
-    if result_array[0][0] == invalid_rational:
+    if type(result_array[0][0]) is Rational and not result_array[0][0].is_valid():
         return gv.no_solution
     name_x = get_name_x()
     result = ''
@@ -88,7 +88,7 @@ def get_solution_string(result_array, spaces=5):
     for i in range(0, spaces):
         space += ' '
     for i in range(0, gv.MATRIX_SIZE):
-        if result_array[i][i] == infinite_rational:
+        if type(result_array[i][i]) is Rational and result_array[i][i].is_inf():
             result_i = gv.infinite
         else:
             result_i = f'{result_array[i][i]}'

@@ -12,9 +12,9 @@ def test():
         gv.MAX_DIGITS_IN_RATIONAL = gv.MAX_DIGITS_IN_FLOAT
 
     #test_general()
-    test_operator()
+    #test_operator()
     #test_periodic()
-    #test_fraction()
+    test_fraction()
     #test_random()
     #test_inf_and_no_solution()
 
@@ -171,7 +171,7 @@ def test_fraction():
     for row in range(0, n):
         cr = []
         for col in range(0, n):
-            r = Rational(f'1/{row+100000001+col}')
+            r = Rational(f'1/{row+1000+col}')
             #r = Rational(f'{row}/{(col + 1) ** 2}') ** 7 - (row * col - 11) ** 6
             #r = Rational((row + col) ** 15 - (row - col - 11) ** 6)
             cr.append(r)
@@ -233,13 +233,14 @@ def test_double_vs_random_matrix(rx):
         print('exception before solving - ' + gv.err)
         gv.err = None
         return
-    if gv.is_rational_converted_to_float:
+    if gv.numerator_converted_to_float:
         print('before solving - rational converted to float')
         gv.is_rational_converted_to_float = False
     td = solve_equations(td)
     print('double:\n' + get_solution_string(td, spaces=2))
     result_d = check_result(dx, td)
     dev_d = print_result(result_d)
+    print('\nfraction:')
 #    gv.show_steps = True
     tr = solve_equations(tr)
     if gv.err is not None:
@@ -248,8 +249,7 @@ def test_double_vs_random_matrix(rx):
         print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
         gv.err = None
     max_digits = gv.rational_largest_digits
-    print('\nfraction:')
-    if gv.is_rational_converted_to_float:
+    if gv.numerator_converted_to_float:
         print('----------------------------------------------')
         print('while solving - rational converted to float')
         print('----------------------------------------------')

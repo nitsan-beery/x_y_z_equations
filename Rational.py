@@ -8,9 +8,9 @@ class Rational:
         self.numerator = n
         self.denominator = d
         if exp is not None:
-            if not self.is_valid():
+            if exp != gv.invalid_rational and not self.is_valid():
                 gv.err = 'invalid rational'
-            elif self.is_inf():
+            elif exp != gv.inf_rational and self.is_inf():
                 gv.err = 'inf rational'
             elif type(n) is int:
                 self.reduce()
