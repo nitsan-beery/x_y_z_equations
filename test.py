@@ -2,7 +2,7 @@ from EquationsSolver import *
 import random
 
 show_steps = False
-round_int = False
+round_int = True
 
 
 def test():
@@ -14,9 +14,9 @@ def test():
     #test_general()
     #test_operator()
     #test_periodic()
-    #test_fraction()
+    test_fraction()
     #test_random()
-    test_inf_and_no_solution()
+    #test_inf_and_no_solution()
 
 
 def test_general():
@@ -230,11 +230,11 @@ def test_double_vs_random_matrix(rx):
     if gv.err is not None:
         if gv.ROUND_INT:
             gv.err += ' -> change ROUND_INT to False'
-        print('exception before solving - ' + gv.err)
+        print_exception(gv.err, gv.exception_type_notice)
         gv.err = None
         return
     if gv.numerator_converted_to_float:
-        print('before solving - rational converted to float')
+        print_exception('before solving - rational converted to float', gv.exception_type_notice)
         gv.is_rational_converted_to_float = False
     td = solve_equations(td)
     print('double:\n' + get_solution_string(td, spaces=2))
@@ -244,22 +244,17 @@ def test_double_vs_random_matrix(rx):
 #    gv.show_steps = True
     tr = solve_equations(tr)
     if gv.err is not None:
-        print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        print('exception while solving - ' + gv.err)
-        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
+        print_exception(gv.err)
         gv.err = None
     max_digits = gv.rational_largest_digits
     if gv.numerator_converted_to_float:
-        print('----------------------------------------------')
-        print('while solving - rational converted to float')
-        print('----------------------------------------------')
+        print_exception('while solving - rational converted to float', gv.exception_type_notice)
         gv.is_rational_converted_to_float = False
     print(get_solution_string(tr, spaces=2))
     result_r = check_result(rx, tr)
     if gv.err is not None:
-        print('\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        print('exception while solving - ' + gv.err)
-        print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n')
+        print_exception('while solving - ' + gv.err)
+        gv.err = None
     dev_r = print_result(result_r)
     r_d_dev = 'inf'
     if dev_r == 0:
@@ -270,6 +265,20 @@ def test_double_vs_random_matrix(rx):
     elif dev_d is not gv.no_solution and dev_d != 0:
         r_d_dev = float(dev_r / dev_d)
     print(f'\nr_deviation / d_deviation: {r_d_dev}\nmax rational digits: {max_digits}')
+
+
+def print_exception(msg=gv.unknown_exception, ex_type=gv.exception_type_warning):
+    line = 'oooooooooooooooooooooooooooooooooo'
+    if ex_type == gv.exception_type_warning:
+        print('\n')
+        line = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    elif ex_type == gv.exception_type_notice:
+        line = '---------------------------------------------'
+    print(line)
+    print(msg)
+    print(line)
+    if ex_type == gv.exception_type_warning:
+        print('\n')
 
 
 def check_result(x, r):

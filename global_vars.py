@@ -24,6 +24,9 @@ no_solution = 'No Solution'
 infinite = 'infinite'
 inf_rational = '1/0'
 invalid_rational = '0/0'
+unknown_exception = 'unknown exception'
+exception_type_notice = 0
+exception_type_warning = 1
 
 err = None
 # for testing
