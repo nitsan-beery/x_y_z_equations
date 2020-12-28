@@ -9,59 +9,112 @@ def test():
     gv.show_steps = show_steps
     gv.ROUND_INT = round_int
     if round_int:
-        gv.MAX_DIGITS_TO_ALLOW_INT = gv.MAX_DIGITS_IN_FLOAT
+        gv.MAX_DIGITS_IN_RATIONAL = gv.MAX_DIGITS_IN_FLOAT
 
+    #test_general()
     test_operator()
+    #test_periodic()
     #test_fraction()
     #test_random()
     #test_inf_and_no_solution()
 
 
+def test_general():
+    r1 = Rational('1/53')
+    r2 = Rational('-91/3')
+    r3 = r1 + r2
+    print(r1, r2, r3)
+
+
+def test_periodic():
+    min_n = 2
+    max_n = 1000
+    dif = max_n - min_n
+    float_count = 0
+    for i in range(min_n, max_n):
+        f = 3/i
+        r = Rational(f)
+        if type(r.numerator) is float:
+            float_count += 1
+            print(f'1/{i}   {r}')
+    print(f'\n{dif-float_count}/{dif} = {1-(float_count/(max_n-min_n))}')
+
+
 def test_operator():
+    print_each_result = False
+    precision = 10 ** -9
     inf = float('inf')
-    s_fail = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n' \
-             ' check   check   check   check   check\n' \
-             'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    m_no_zero = [(inf, inf), (1, inf), (inf, 1), (1, 1)]
-    m_with_zero = [(0, inf), (inf, 0), (0, 1), (1, 0)]
+    big_f = 10 ** (gv.MAX_DIGITS_IN_FLOAT + 10)
+    big_i = 10 ** (gv.MAX_DIGITS_IN_RATIONAL + 10)
+    gv.ROUND_INT = False
+    s_fail = '\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n' \
+             '                     fail     fail     fail     fail     fail    fail     fail\n' \
+             'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    m_no_zero = [(inf, inf), (3, inf), (inf, 5), (1/53, 3/911), (big_f, 3), (3, big_f), (big_i, 7), (7, big_i)]
+    m_with_zero = [(0, inf), (inf, 0), (0, 11), (11, 0)]
     for pair in m_no_zero:
         f1 = pair[0]
         f2 = pair[1]
-        success = test_all_operators(f1, f2)
+        try:
+            f1 = float(f1)
+        except OverflowError:
+            f1 = float('inf')
+        try:
+            f2 = float(f2)
+        except OverflowError:
+            f2 = float('inf')
+        success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
+            test_all_operators(f1, f2, True, precision)
             print(s_fail)
+            return
         f1 = -f1
-        success = test_all_operators(f1, f2)
+        success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
+            test_all_operators(f1, f2, True, precision)
             print(s_fail)
+            return
         f1 = -f1
         f2 = -f2
-        success = test_all_operators(f1, f2)
+        success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
+            test_all_operators(f1, f2, True, precision)
             print(s_fail)
+            return
         f1 = -f1
-        success = test_all_operators(f1, f2)
+        success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
+            test_all_operators(f1, f2, True, precision)
             print(s_fail)
+            return
     for pair in m_with_zero:
         f1 = pair[0]
         f2 = pair[1]
-        success = test_all_operators(f1, f2)
+        success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
+            test_all_operators(f1, f2, True, precision)
             print(s_fail)
+            return
         if f1 == 0:
             f2 = -f2
         else:
             f1 = -f1
-        success = test_all_operators(f1, f2)
+        success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
             print(s_fail)
-    success = test_all_operators(0, 0)
+            test_all_operators(f1, f2, True, precision)
+            return
+    f1 = 0
+    f2 = 0
+    success = test_all_operators(f1, f2, print_each_result, precision)
     if not success:
         print(s_fail)
+        test_all_operators(f1, f2, True, precision)
+        return
+    print('\nSUCCESS')
 
 
-def test_all_operators(f1, f2):
+def test_all_operators(f1, f2, show_result=False, precision=0):
     r1 = Rational(f1)
     r2 = Rational(f2)
     gt = r1 > r2
@@ -75,35 +128,38 @@ def test_all_operators(f1, f2):
     r_minus = r1-r2
     f_mul = f1*f2
     r_mul = r1*r2
-    if f2 != 0:
+    try:
         f_div = f1/f2
-    else:
+    except ZeroDivisionError:
         f_div = float('nan')
     r_div = r1/r2
-    t_plus = f_plus == r_plus
-    t_minus = f_minus == r_minus
-    t_mul = f_mul == r_mul
-    t_div = f_div == r_div
+    t_plus = f_plus == float(r_plus) or (str(f_plus).lower() == 'nan' and not r_plus.is_valid()) or abs(f_plus - float(r_plus)) < precision
+    t_minus = f_minus == float(r_minus) or (str(f_minus).lower() == 'nan' and not r_minus.is_valid()) or abs(f_minus - float(r_minus)) < precision
+    t_mul = f_mul == float(r_mul) or (str(f_mul).lower() == 'nan' and not r_mul.is_valid()) or abs(f_mul - float(r_mul)) < precision
+    t_div = (f_div == float(r_div)) or (str(f_div).lower() == 'nan' and not r_div.is_valid()) or abs(f_div - float(r_div)) < precision
     t_eq = eq == (f1 == f2)
     t_gt = gt == (f1 > f2)
     t_ge = ge == (f1 >= f2)
     t_lt = lt == (f1 < f2)
     t_le = le == (f1 <= f2)
-    print('')
-    print(f'r1: {r1}   r2: {r2}')
-    print(f'+   float: {f_plus}   rational: {r_plus}   | {t_plus}')
-    print(f'-   float: {f_minus}   rational: {r_minus}   | {t_minus}')
-    print(f'*   float: {f_mul}   rational: {r_mul}   | {t_mul}')
-    print(f'/   float: {f_div}   rational: {r_div}   | {t_div}')
-    print(f'r1 == r2: {eq}   | {t_eq}')
-    print(f'r1 > r2: {gt}   | {t_gt}')
-    print(f'r1 >= r2: {ge}   | {t_ge}')
-    print(f'r1 < r2: {lt}   | {t_lt}')
-    print(f'r1 <= r2: {le}   | {t_le}')
-
-    if gv.is_rational_converted_to_float:
-        print('rational_converted_to_float')
-    print(f'err: {gv.err}')
+    if show_result:
+        print('')
+        print(f'r1: {r1}   r2: {r2}')
+        print(f'+   float: {f_plus}   rational: {r_plus}   | {t_plus}')
+        print(f'-   float: {f_minus}   rational: {r_minus}   | {t_minus}')
+        print(f'*   float: {f_mul}   rational: {r_mul}   | {t_mul}')
+        print(f'/   float: {f_div}   rational: {r_div}   | {t_div}')
+        print(f'r1 == r2: {eq}   | {t_eq}')
+        print(f'r1 > r2: {gt}   | {t_gt}')
+        print(f'r1 >= r2: {ge}   | {t_ge}')
+        print(f'r1 < r2: {lt}   | {t_lt}')
+        print(f'r1 <= r2: {le}   | {t_le}')
+        if gv.err is not None:
+            print(f'{r1}   {r2}   err: {gv.err}')
+            gv.err = None
+    if gv.numerator_converted_to_float:
+        print(f'{r1}   {r2}   rational_converted_to_float')
+        gv.numerator_converted_to_float = False
 
     return t_plus and t_minus and t_mul and t_div and t_eq and t_gt and t_ge and t_lt and t_le
 

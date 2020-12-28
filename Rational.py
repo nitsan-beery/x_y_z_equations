@@ -3,27 +3,25 @@ import math
 
 
 class Rational:
-    def __init__(self, exp=gv.invalid_rational):
-        n, d = get_n_d_from_exp(exp)
+    def __init__(self, exp=None, check_float=True):
+        n, d = get_n_d_from_exp(exp, check_float)
         self.numerator = n
         self.denominator = d
-        self.reduce()
+        if exp is not None:
+            if not self.is_valid():
+                gv.err = 'invalid rational'
+            elif self.is_inf():
+                gv.err = 'inf rational'
+            elif type(n) is int:
+                self.reduce()
 
     def reduce(self):
-        if self.denominator == 0:
+        if type(self.numerator) is float or type(self.denominator) is float:
+            self.numerator = float(self)
+            self.denominator = 1
             return
         if self.numerator == 0:
             self.denominator = 1
-            return
-        if type(self.numerator) is float or type(self.denominator) is float:
-            self.numerator /= self.denominator
-            self.denominator = 1
-            return
-        if not self.is_valid():
-            gv.err = 'invalid rational'
-            return
-        if self.is_inf():
-            gv.err = 'inf rational'
             return
 
         # for testing
@@ -37,15 +35,21 @@ class Rational:
 
         g = get_gcd(self.numerator, self.denominator)
         if self.is_int_too_large():
-            gv.err = f'too large rational {self.numerator}/{self.denominator} exceeds {gv.MAX_DIGITS_TO_ALLOW_INT} digits limit'
-            self.numerator = self.numerator / g
-            self.denominator = self.denominator / g
-            if str(self.numerator).count('e') == 0:
-                self.numerator = int(self.numerator)
-            if str(self.denominator).count('e') == 0:
-                self.denominator = int(self.denominator)
-            if type(self.numerator) is float or type(self.denominator) is float:
-                self.numerator /= self.denominator
+            if self.can_convert_n_d_to_float():
+                self.numerator = self.numerator / g
+                self.denominator = self.denominator / g
+                if str(self.numerator).count('e') == 0:
+                    self.numerator = int(self.numerator)
+                if str(self.denominator).count('e') == 0:
+                    self.denominator = int(self.denominator)
+                # n or d were ~ 1.ex
+                if type(self.numerator) is float or type(self.denominator) is float:
+                    gv.numerator_converted_to_float = True
+                    self.numerator /= self.denominator
+                    self.denominator = 1
+            else:
+                gv.numerator_converted_to_float = True
+                self.numerator = float(self)
                 self.denominator = 1
         else:
             if g == 1:
@@ -64,11 +68,24 @@ class Rational:
         return False
 
     def is_int_too_large(self):
-        if type(self.numerator) is int and len(str(abs(self.numerator))) > gv.MAX_DIGITS_TO_ALLOW_INT:
+        if type(self.numerator) is int and len(str(abs(self.numerator))) > gv.MAX_DIGITS_IN_RATIONAL:
             return True
-        if type(self.denominator) is int and len(str(abs(self.denominator))) > gv.MAX_DIGITS_TO_ALLOW_INT:
+        if type(self.denominator) is int and len(str(abs(self.denominator))) > gv.MAX_DIGITS_IN_RATIONAL:
             return True
         return False
+
+    def can_convert_n_d_to_float(self):
+        if type(self.numerator) is int and len(str(abs(self.numerator))) > gv.MAX_DIGITS_TO_ALLOW_INT:
+            return False
+        if type(self.denominator) is int and len(str(abs(self.denominator))) > gv.MAX_DIGITS_TO_ALLOW_INT:
+            return False
+        return True
+
+    def copy(self):
+        f = Rational()
+        f.numerator = self.numerator
+        f.denominator = self.denominator
+        return f
 
     def __str__(self):
         n = self.numerator
@@ -105,7 +122,6 @@ class Rational:
 
     def __eq__(self, other):
         f = Rational(other)
-        self.reduce()
         return self.numerator == f.numerator and self.denominator == f.denominator
 
     def __ne__(self, other):
@@ -129,7 +145,7 @@ class Rational:
             if f.numerator > 0:
                 return False
             return True
-        return self.numerator/self.denominator > f.numerator/f.denominator
+        return float(self) > float(f)
 
     def __ge__(self, other):
         f = Rational(other)
@@ -152,7 +168,10 @@ class Rational:
         return not self.__gt__(other)
 
     def __add__(self, other):
-        f = Rational(other)
+        if type(other) is not Rational:
+            f = Rational(other)
+        else:
+            f = other.copy()
         if not f.is_valid() or not self.is_valid():
             return Rational(gv.invalid_rational)
         elif self.is_inf():
@@ -170,19 +189,25 @@ class Rational:
         len_self_d = math.log(abs(self.denominator), 10) + 1
         len_other_n = math.log(abs(f.numerator), 10) + 1
         len_other_d = math.log(abs(f.denominator), 10) + 1
-        if len_self_n + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT \
-                or len_self_d + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT \
+        if len_self_n + len_other_d > gv.MAX_DIGITS_IN_RATIONAL or len_self_d + len_other_n > gv.MAX_DIGITS_IN_RATIONAL \
+                or len_self_d + len_other_d > gv.MAX_DIGITS_IN_RATIONAL \
                 or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
-            f.numerator = (self.numerator/self.denominator) + (f.numerator/f.denominator)
+            f.numerator = float(self) + float(f)
             f.denominator = 1
-            gv.is_rational_converted_to_float = True
+            gv.numerator_converted_to_float = True
+            if f.numerator == 0:
+                # convert 0.0 to int
+                f.numerator = 0
         else:
             f.numerator, f.denominator = self.numerator * f.denominator + f.numerator * self.denominator, self.denominator * f.denominator
-        f.reduce()
+            f.reduce()
         return f
 
     def __sub__(self, other):
-        f = Rational(other)
+        if type(other) is not Rational:
+            f = Rational(other)
+        else:
+            f = other.copy()
         if not f.is_valid() or not self.is_valid():
             return Rational(gv.invalid_rational)
         elif self.is_inf():
@@ -200,19 +225,22 @@ class Rational:
         len_self_d = math.log(abs(self.denominator), 10) + 1
         len_other_n = math.log(abs(f.numerator), 10) + 1
         len_other_d = math.log(abs(f.denominator), 10) + 1
-        if len_self_n + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT \
-                or len_self_d + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT \
+        if len_self_n + len_other_d > gv.MAX_DIGITS_IN_RATIONAL or len_self_d + len_other_n > gv.MAX_DIGITS_IN_RATIONAL \
+                or len_self_d + len_other_d > gv.MAX_DIGITS_IN_RATIONAL \
                 or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
-            f.numerator = (self.numerator/self.denominator) - (f.numerator/f.denominator)
+            f.numerator = float(self) - float(f)
             f.denominator = 1
-            gv.is_rational_converted_to_float = True
+            gv.numerator_converted_to_float = True
         else:
             f.numerator, f.denominator = self.numerator * f.denominator - f.numerator * self.denominator, self.denominator * f.denominator
-        f.reduce()
+            f.reduce()
         return f
 
     def __mul__(self, other):
-        f = Rational(other)
+        if type(other) is not Rational:
+            f = Rational(other)
+        else:
+            f = other.copy()
         if not f.is_valid() or not self.is_valid():
             return Rational(gv.invalid_rational)
         elif self.is_inf():
@@ -235,18 +263,21 @@ class Rational:
         len_self_d = math.log(abs(self.denominator), 10) + 1
         len_other_n = math.log(abs(f.numerator), 10) + 1
         len_other_d = math.log(abs(f.denominator), 10) + 1
-        if len_self_n + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT \
+        if len_self_n + len_other_n > gv.MAX_DIGITS_IN_RATIONAL or len_self_d + len_other_d > gv.MAX_DIGITS_IN_RATIONAL \
                 or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
-            f.numerator = (self.numerator / self.denominator) * (f.numerator / f.denominator)
+            f.numerator = float(self) * float(f)
             f.denominator = 1
-            gv.is_rational_converted_to_float = True
+            gv.numerator_converted_to_float = True
         else:
             f.numerator, f.denominator = self.numerator * f.numerator, self.denominator * f.denominator
-        f.reduce()
+            f.reduce()
         return f
 
     def __truediv__(self, other):
-        f = Rational(other)
+        if type(other) is not Rational:
+            f = Rational(other)
+        else:
+            f = other.copy()
         if not f.is_valid() or not self.is_valid() or f.numerator == 0:
             return Rational(gv.invalid_rational)
         elif self.is_inf():
@@ -262,18 +293,21 @@ class Rational:
         len_self_d = math.log(abs(self.denominator), 10) + 1
         len_other_n = math.log(abs(f.numerator), 10) + 1
         len_other_d = math.log(abs(f.denominator), 10) + 1
-        if len_self_n + len_other_d > gv.MAX_DIGITS_TO_ALLOW_INT or len_self_d + len_other_n > gv.MAX_DIGITS_TO_ALLOW_INT \
+        if len_self_n + len_other_d > gv.MAX_DIGITS_IN_RATIONAL or len_self_d + len_other_n > gv.MAX_DIGITS_IN_RATIONAL \
                 or int(f.numerator) != f.numerator or int(self.numerator) != self.numerator:
-            f.numerator = (self.numerator / self.denominator) / (f.numerator / f.denominator)
+            f.numerator = float(self) / float(f)
             f.denominator = 1
-            gv.is_rational_converted_to_float = True
+            gv.numerator_converted_to_float = True
         else:
             f.numerator, f.denominator = self.numerator * f.denominator, self.denominator * f.numerator
-        f.reduce()
+            f.reduce()
         return f
 
     def __pow__(self, other):
-        f = Rational(other)
+        if type(other) is not Rational:
+            f = Rational(other)
+        else:
+            f = other.copy()
         n, d = f.numerator, f.denominator
         if d != 0 and self.denominator != 0:
             p = round(self.numerator ** (n/d), gv.PRECISION)
@@ -294,18 +328,24 @@ class Rational:
         return f
 
     def __float__(self):
-        if self == Rational(gv.inf_rational):
-            return float('inf')
-        elif self == Rational(gv.invalid_rational):
+        if not self.is_valid():
             return float('nan')
-        elif self.is_int_too_large():
-            len_n = len(str(abs(self.numerator)))
-            len_d = len(str(abs(self.denominator)))
+        if self.is_inf():
+            if self.numerator > 0:
+                return float('inf')
+            return -float('inf')
+        if self.can_convert_n_d_to_float():
+            return self.numerator / self.denominator
+        sign = -1
+        if (self.numerator > 0 and self.denominator > 0) or (self.numerator < 0 and self.denominator < 0):
             sign = 1
-            if self < 0:
-                sign = -1
-            return sign * (10 ** len_n / 10 ** len_d)
-        return self.numerator / self.denominator
+        if len(str(self.numerator)) > gv.MAX_DIGITS_TO_ALLOW_INT:
+            gv.err = f'too large rational - exceeds {gv.MAX_DIGITS_IN_RATIONAL} digits limit'
+            if len(str(self.denominator)) > gv.MAX_DIGITS_TO_ALLOW_INT:
+                return float('nan')
+            return sign * float('inf')
+        # only denominator is too large
+        return 0.0
 
 
 def get_gcd(p, q):
@@ -324,7 +364,7 @@ def get_gcd(p, q):
 # exp can be in any format (str, int, float or Rational)
 # return numerator, denominator
 # if exp is invalid return 0, 0
-def get_n_d_from_exp(exp):
+def get_n_d_from_exp(exp, check_float=True):
     if exp is None:
         return 0, 0
     if type(exp) is Rational:
@@ -358,10 +398,10 @@ def get_n_d_from_exp(exp):
                 except ValueError:
                     return 0, 0
     # exp is int or float
-    return get_n_d_from_float(exp)
+    return get_n_d_from_float(exp, check_float)
 
 
-def get_n_d_from_float(exp):
+def get_n_d_from_float(exp, check_float=True):
     if str(exp).count('e') > 0:
         return exp, 1
     if exp == float('inf') or exp == float('-inf'):
@@ -371,39 +411,31 @@ def get_n_d_from_float(exp):
             return -1, 0
     if str(exp).lower() == 'nan':
         return 0, 0
-    if exp == int(exp):
-    #if type(exp) is int:
-        return int(exp), 1
-    f_exp = exp
-    exp = str(exp)
-    sign = 1
-    if exp[0] == '-':
-        sign = -1
-    p = exp.find(".")
-    if p == 0 or (p == 1 and sign == -1):
-        i = 0
-    else:
-        i = int(exp[:p])
-    str_r = exp[p + 1:]
-    r = int(str_r)
-    if len(exp) < gv.MAX_DIGITS_IN_FLOAT:
-        p = len(str_r)
-        d = 10 ** p
-        n = d * i + sign * r
-        g = get_gcd(n, d)
-        return int(n / g), int(d / g)
-    periodic = check_periodic(f_exp)
-    if periodic > 0:
-        return int(f_exp * periodic), int(periodic)
-    else:
-        return f_exp, 1
+    if check_float:
+        p_n, p_d = check_periodic(exp)
+        if p_n > 0:
+            if p_d > 0:
+                return p_n, p_d
+            else:
+                return int(exp * p_n), int(p_n)
+    return exp, 1
 
 
-def check_periodic(f):
+def check_periodic(exp):
+    if str(exp).count('e') > 0:
+        return 0
+    left_part_digits = 5
+    left_part_factor = 10 ** left_part_digits
+    f = exp * left_part_factor
+    if f == int(f):
+        return int(f), left_part_factor
     for n in range(2, gv.MAX_N_FOR_PERIODIC_CHECK):
-        if f * n == int(n * f):
-            return n
-    return 0
+        if exp * n == int(exp * n):
+            return n, 0
+    if len(str(exp)) < gv.MAX_DIGITS_IN_FLOAT:
+        exp_10 = 10 ** len(str(exp))
+        return int(exp * exp_10), int(exp_10)
+    return exp, 1
 
 
 # return the int of n/d
