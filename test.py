@@ -3,7 +3,7 @@ import random
 import time
 
 show_steps = False
-round_int = False
+round_int = True
 
 
 def test():
@@ -11,13 +11,14 @@ def test():
     gv.ROUND_INT = round_int
     if round_int:
         gv.MAX_DIGITS_IN_RATIONAL = gv.MAX_DIGITS_IN_FLOAT
+    count_down = False
 
     #test_general()
-    #test_operator()
-    #test_periodic()
-    #test_fraction(20, count_down=False)
-    test_random(10, count_down=False)
+    #test_operator(print_each_result=False)
+    test_fraction(15, count_down)
+    #test_random(10, count_down)
     #test_inf_and_no_solution()
+    #test_periodic()
 
 
 def test_general():
@@ -74,8 +75,7 @@ def test_periodic():
     print(f'\n{dif-float_count}/{dif} = {1-(float_count/(max_n-min_n))}')
 
 
-def test_operator():
-    print_each_result = False
+def test_operator(print_each_result=False):
     precision = 10 ** -9
     inf = float('inf')
     big_f = 10 ** (gv.MAX_DIGITS_IN_FLOAT + 10)
@@ -287,15 +287,21 @@ def test_double_vs_random_matrix(rx, count_down=False):
         gv.err = None
     dev_r = print_result(result_r)
     print(f'time: {time_r} sec')
-    r_d_dev = 'inf'
+    dev_d = Rational(dev_d)
+    d_r_dev = 'inf'
     if dev_r == 0:
         if dev_d == 0:
-            r_d_dev = '0'
+            d_r_dev = '1'
         else:
-            r_d_dev = 'inf'
-    elif dev_d is not gv.no_solution and dev_d != 0:
-        r_d_dev = float(dev_r / dev_d)
-    print(f'\nr_deviation / d_deviation: {r_d_dev}')
+            d_r_dev = 'inf'
+    elif dev_r is gv.no_solution:
+        if dev_d is gv.no_solution:
+            d_r_dev = '1'
+        else:
+            d_r_dev = '-inf'
+    elif dev_d is not gv.no_solution:
+        d_r_dev = float(dev_d / dev_r)
+    print(f'\nd_deviation / r_deviation: {d_r_dev}')
     print(f'r_time / d_time: {time_r / time_d}')
     print(f'max rational digits: {max_digits}\n')
 
