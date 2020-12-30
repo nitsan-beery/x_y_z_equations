@@ -175,7 +175,7 @@ class EquationsWindow:
                 self.entry_answer.insert(0, f'invalid n[{row+1}]')
                 return
 
-        self.solution = solve_equations(x)
+        self.solution = solve_matrix(x)
         self.entry_answer.insert(0, get_solution_string(self.solution))
 
     def switch_fraction_type(self):

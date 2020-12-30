@@ -8,7 +8,7 @@ show_steps = False
 ROUND_INT = False
 MATRIX_SIZE = 2
 MAX_MATRIX_SIZE = 9
-MAX_DIGITS_TO_SHOW_FRACTION = 5
+MAX_DIGITS_TO_SHOW_FRACTION = 50
 PRECISION = 5
 MAX_DIGITS_IN_FLOAT = 17
 MAX_DIGITS_TO_ALLOW_INT = 308
@@ -32,4 +32,5 @@ err = None
 # for testing
 rational_largest_digits = 0
 numerator_converted_to_float = False
+step_by_step_matrix = []
 
