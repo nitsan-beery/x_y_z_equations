@@ -2,7 +2,7 @@ from Rational import *
 import global_vars as gv
 
 
-def solve_matrix(x, get_step_by_step_matrix=False):
+def solve_matrix(x, count_down=False, get_step_by_step_matrix=False):
     matrix_size = len(x)
     if gv.show_steps:
         print('\n==========================\n')
@@ -32,7 +32,7 @@ def solve_matrix(x, get_step_by_step_matrix=False):
         if get_step_by_step_matrix:
             tmp_x = copy_matrix(x)
             gv.step_by_step_matrix.append(tmp_x)
-        if gv.test_mode and type(x[0][0]) is Rational:
+        if gv.test_mode and count_down and type(x[0][0]) is Rational:
             print(matrix_size-col)
     if gv.show_steps:
         print_matrix(x)
