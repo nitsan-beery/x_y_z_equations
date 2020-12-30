@@ -27,10 +27,13 @@ def solve_matrix(x, get_step_by_step_matrix=False):
                 continue
             row_ratio = x[row][ref]
             for c in range(ref, matrix_size+1):
-                x[row][c] -= x[ref][c] * row_ratio
+                dif = x[ref][c] * row_ratio
+                x[row][c] -= dif
         if get_step_by_step_matrix:
             tmp_x = copy_matrix(x)
             gv.step_by_step_matrix.append(tmp_x)
+        if gv.test_mode and type(x[0][0]) is Rational:
+            print(matrix_size-col)
     if gv.show_steps:
         print_matrix(x)
 

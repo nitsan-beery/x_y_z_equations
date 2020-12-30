@@ -2,7 +2,7 @@ from EquationsSolver import *
 import random
 import time
 
-show_steps = True
+show_steps = False
 round_int = False
 
 
@@ -12,74 +12,40 @@ def test():
     if round_int:
         gv.MAX_DIGITS_IN_RATIONAL = gv.MAX_DIGITS_IN_FLOAT
 
-    test_general()
+    #test_general()
     #test_operator()
     #test_periodic()
-    #test_fraction(11)
-    #test_random(15)
+    #test_fraction(20)
+    test_random(30)
     #test_inf_and_no_solution()
 
 
 def test_general():
-    exp_10 = 10 ** 20
+    n = 73040216269692243
+    n = 1000000000000002
+    d = 3
+    f = n/d
+    r = Rational(f'{n}/{d}')
 
-    r11 = Rational(1)
-    r12 = Rational('683497451800/1269889185279')
-    r13 = Rational(1)
-    r14 = Rational(f'1/{exp_10}')
-    r21 = Rational(0)
-    r22 = Rational('1/7503934365168430814652764318422482617976')
-    r23 = Rational('1/1697436535000049692318274597285957858394')
-    r24 = Rational(f'1/{exp_10}')
-    r31 = Rational(0)
-    r32 = Rational(1)
-    r33 = Rational(0)
-    r34 = Rational(0)
-    r23_ = r23 / r22
-    r24_ = r24 / r22
-    r22_ = r22 / r22
-    ratio1 = r12
-    sub12 = ratio1 * r22_
-    r121 = r12 - sub12
-    sub13 = ratio1 * r23_
-    r131 = r13 - sub13
-    sub14 = ratio1 * r24_
-    r141 = r14 - sub14
-    ratio3 = r32
-    sub32 = ratio3 * r22_
-    r321 = r32 - sub32
-    sub33 = ratio3 * r23_
-    r331 = r33 - sub33
-    sub34 = ratio3 * r24_
-    r341 = r34 - sub34
+    an = 2028894896373277
+    ad = 2028894896380340
+    bn = 1697436535000049692318274597285957858394
+    bd = 1
+    a_mulb_n = 1721960161389570098983065643479711969108893924265868569
+    a_mulb_d = 1014447448190170
 
-    x1 = Rational('-172196016139556442782008027587647696994024799876677101/10144474481901700000000000000000000')
-    x2 = Rational(0)
-    x3 = Rational('848718267500024846159137298642978929197/50000000000000000000')
-    r1 = r11 * x1
-    r2 = r12 * x2
-    r3 = r13 * x3
-    r4 = r14
-    result = r1 + r2 + r3
-    print(f'{r1} + {r2} + {r3} = {result}')
-    print(f'r4 = {r4}')
-    print(f'dif: {r4-result}')
+    d = a_mulb_n * 2
+    xn = div_large_number(d, an)
+    y = xn - bn
+    dif = a_mulb_n/a_mulb_d
+    xrow = -5909125341137372427087358343 - dif
+    xrow_n = -1721960161395564596106418318721920399967470985865956879
+    xrow_d = 1014447448190170
 
-    return
-    '''
-1 683497451800/1269889185279 1    1/100000000000000000000
-0 1/7503934365168430814652764318422482617976 1/1697436535000049692318274597285957858394    1/100000000000000000000
-0 1 0    0
-
-result:
-1 0 0    -172196016139556442782008027587647696994024799876677101/10144474481901700000000000000000000
-0 1 0    0
-0 0 1    848718267500024846159137298642978929197/50000000000000000000
-'''
 
     rx = [
-        [1, '683497451800/1269889185279', 1, f'1/{exp_10}'],
-        [0, '1/7503934365168430814652764318422482617976', '1/1697436535000049692318274597285957858394', f'1/{exp_10}'],
+        [1, '1/1269889185279', 1, 1],
+        [0, '1/7503934365168430814652764318422482617976', '1/1697436535000049692318274597285957858394', 1],
         [0, 1, 0, 0],
     ]
     n = len(rx)
@@ -90,6 +56,7 @@ result:
         print_matrix(rx)
     origin_m = copy_matrix(rx)
     tx = solve_matrix(rx)
+#    print(get_solution_string(tx, spaces=2))
     result_r = check_result(origin_m, tx)
     if gv.err is not None:
         print_exception('while solving - ' + gv.err)
