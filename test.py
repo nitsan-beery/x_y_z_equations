@@ -1,9 +1,10 @@
 from EquationsSolver import *
 import random
 import time
+from fractions import Fraction
 
 show_steps = False
-round_int = True
+round_int = False
 
 
 def test():
@@ -14,17 +15,18 @@ def test():
     count_down = False
 
     #test_general()
-    #test_operator(print_each_result=False)
-    test_fraction(15, count_down)
-    #test_random(10, count_down)
+    #test_operator(print_each_result=True)
+    #test_fraction(50, count_down)
+    test_random(15, count_down)
     #test_inf_and_no_solution()
     #test_periodic()
 
 
 def test_general():
-    n = 73040216269692243
-    n = 1000000000000002
+    n = 1.0
+    d = 0.0
     r = Rational(f'{n}/{d}')
+    print(r)
 
 
 def test_fraction(n=11, count_down=False):
@@ -44,7 +46,7 @@ def test_fraction(n=11, count_down=False):
     if not gv.show_steps:
         print_matrix(rx)
     #test_n_vs_n_minus_one_steps(rx)
-    test_double_vs_random_matrix(rx, count_down)
+    test_double_vs_fraction_matrix(rx, count_down)
 
 
 def test_random(n=10, count_down=False):
@@ -58,21 +60,22 @@ def test_random(n=10, count_down=False):
         rx.append(cr)
     if not gv.show_steps:
         print_matrix(rx)
-    test_double_vs_random_matrix(rx, count_down)
+    test_double_vs_fraction_matrix(rx, count_down)
 
 
 def test_periodic():
     min_n = 2
     max_n = 1000
     dif = max_n - min_n
-    float_count = 0
-    for i in range(min_n, max_n):
-        f = 3/i
-        r = Rational(f)
-        if type(r.numerator) is float:
-            float_count += 1
-            print(f'1/{i}   {r}')
-    print(f'\n{dif-float_count}/{dif} = {1-(float_count/(max_n-min_n))}')
+    for n in range(1, 100):
+        float_count = 0
+        for i in range(min_n, max_n):
+            f = n/i
+            r = Rational(f)
+            if type(r.numerator) is float:
+                float_count += 1
+#                print(f'{n}/{i}   {r}')
+        print(f'{n}/x:   {dif-float_count}/{dif} = {1-(float_count/(max_n-min_n))}')
 
 
 def test_operator(print_each_result=False):
@@ -92,11 +95,11 @@ def test_operator(print_each_result=False):
         try:
             f1 = float(f1)
         except OverflowError:
-            f1 = float('inf')
+            f1 = inf
         try:
             f2 = float(f2)
         except OverflowError:
-            f2 = float('inf')
+            f2 = inf
         success = test_all_operators(f1, f2, print_each_result, precision)
         if not success:
             test_all_operators(f1, f2, True, precision)
@@ -209,7 +212,7 @@ def test_inf_and_no_solution():
     convert_matrix_to_rational(rx)
     if not gv.show_steps:
         print_matrix(rx)
-    test_double_vs_random_matrix(rx)
+    test_double_vs_fraction_matrix(rx)
     print('\nTest - infinite solution')
     rx = [
         [1, 1, 1],
@@ -218,7 +221,7 @@ def test_inf_and_no_solution():
     convert_matrix_to_rational(rx)
     if not gv.show_steps:
         print_matrix(rx)
-    test_double_vs_random_matrix(rx)
+    test_double_vs_fraction_matrix(rx)
 
 
 def test_n_vs_n_minus_one_steps(rx):
@@ -246,7 +249,7 @@ def test_n_vs_n_minus_one_steps(rx):
     print('success')
 
 
-def test_double_vs_random_matrix(rx, count_down=False):
+def test_double_vs_fraction_matrix(rx, count_down=False):
     dx = copy_matrix(rx)
     convert_matrix_to_float(dx)
     td = copy_matrix(dx)
@@ -370,6 +373,13 @@ def convert_matrix_to_rational(x):
     for row in range(n):
         for col in range(n+1):
             x[row][col] = Rational(x[row][col])
+
+
+def convert_matrix_to_fraction(x):
+    n = len(x)
+    for row in range(n):
+        for col in range(n+1):
+            x[row][col] = Fraction(x[row][col].numerator, x[row][col].denominator)
 
 
 def get_none_matrix(n):

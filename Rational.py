@@ -52,6 +52,17 @@ class Rational:
                 gv.numerator_converted_to_float = True
                 self.numerator = float(self)
                 self.denominator = 1
+                if abs(self.numerator) == float('inf'):
+                    f = Rational(gv.inf_rational)
+                    self.denominator = f.denominator
+                    if self.numerator > 0:
+                        self.numerator = f.numerator
+                    else:
+                        self.numerator = -f.numerator
+                elif self.numerator == float('nan'):
+                    f = Rational(gv.invalid_rational)
+                    self.numerator = f.numerator
+                    self.denominator = f.denominator
         else:
             if g == 1:
                 return
