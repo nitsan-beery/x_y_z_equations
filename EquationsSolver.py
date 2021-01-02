@@ -1,8 +1,8 @@
-from Rational import *
 import global_vars as gv
+from fractions import Fraction
 
 
-def solve_matrix(x, count_down=False, get_step_by_step_matrix=False):
+def solve_matrix(x, get_step_by_step_matrix=False):
     matrix_size = len(x)
     if gv.show_steps:
         print('\n==========================\n')
@@ -32,8 +32,6 @@ def solve_matrix(x, count_down=False, get_step_by_step_matrix=False):
         if get_step_by_step_matrix:
             tmp_x = copy_matrix(x)
             gv.step_by_step_matrix.append(tmp_x)
-        if gv.test_mode and count_down and type(x[0][0]) is Rational:
-            print(matrix_size-col)
     if gv.show_steps:
         print_matrix(x)
 
@@ -48,9 +46,9 @@ def solve_matrix(x, count_down=False, get_step_by_step_matrix=False):
     for row in range(0, matrix_size):
         if x[row][row] == 0:
             if x[row][-1] != 0:
-                result_array[0][0] = Rational(gv.invalid_rational)
+                result_array[0][0] = gv.no_solution
                 break
-            result_array[row][row] = Rational(gv.inf_rational)
+            result_array[row][row] = gv.infinite
         else:
             result_array[row][row] = x[row][-1]
             for col in range(0, matrix_size):
@@ -90,7 +88,7 @@ def get_name_x(matrix_size=gv.MATRIX_SIZE):
 
 def get_solution_string(result_array, spaces=5):
     matrix_size = len(result_array)
-    if type(result_array[0][0]) is Rational and not result_array[0][0].is_valid():
+    if result_array[0][0] == gv.no_solution:
         return gv.no_solution
     name_x = get_name_x(matrix_size)
     result = ''
@@ -98,10 +96,10 @@ def get_solution_string(result_array, spaces=5):
     for i in range(0, spaces):
         space += ' '
     for i in range(0, matrix_size):
-        if type(result_array[i][i]) is Rational and result_array[i][i].is_inf():
+        if result_array[i][i] == gv.infinite:
             result_i = gv.infinite
         else:
-            result_i = f'{result_array[i][i]}'
+            result_i = get_fraction_str(result_array[i][i])
             for c in range(0, len(result_array[i])):
                 if c == i:
                     continue
@@ -114,10 +112,20 @@ def get_solution_string(result_array, spaces=5):
                     if num_i == 1:
                         str_num_i = ''
                     else:
-                        str_num_i = str(num_i)
+                        str_num_i = get_fraction_str(num_i)
                     result_i += f' {sign} {str_num_i}{name_x[c]}'
         result += f'{name_x[i]} = {result_i}' + space
     return result
+
+
+def get_fraction_str(f):
+    if type(f) is not Fraction:
+        return f'{f}'
+    if len(str(f.denominator)) > gv.MAX_DIGITS_TO_SHOW_FRACTION:
+        return f'{f.numerator / f.denominator}'
+    if gv.show_int_above_1 and abs(f) > 1 and f.denominator != 1:
+        return f'{f.numerator//f.denominator}({f.numerator % f.denominator}/{f.denominator})'
+    return f'{f}'
 
 
 def print_matrix(x):

@@ -76,7 +76,7 @@ class EquationsWindow:
         height = 200 + 44 * (gv.MATRIX_SIZE-2)
         self.window_main.geometry(f'{width}x{height}')
         
-        name_x = get_name_x()
+        name_x = get_name_x(n)
 
         self.label_empty_21 = tk.Label(self.frame_2_input, text='')
         self.label_empty_21.grid(row=1, column=0, padx=25)
@@ -164,14 +164,16 @@ class EquationsWindow:
         self.entry_answer.delete(0, tk.END)
         for row in range(0, gv.MATRIX_SIZE):
             for col in range(0, gv.MATRIX_SIZE):
-                x[row][col] = Rational(self.entry_x[row][col].get())
-                if not x[row][col].is_valid():
+                try:
+                    x[row][col] = Fraction(self.entry_x[row][col].get())
+                except (ValueError, ZeroDivisionError):
                     self.entry_answer.insert(0, f'invalid {name_x[col].capitalize()}[{row+1}]')
                     self.entry_x[row][col].focus_set()
                     self.entry_x[row][col].selection_range(0, tk.END)
                     return
-            x[row][-1] = Rational(self.entry_n[row].get())
-            if not x[row][-1].is_valid():
+            try:
+                x[row][-1] = Fraction(self.entry_n[row].get())
+            except (ValueError, ZeroDivisionError):
                 self.entry_answer.insert(0, f'invalid n[{row+1}]')
                 return
 
