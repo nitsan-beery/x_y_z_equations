@@ -5,24 +5,24 @@ from fractions import Fraction
 
 
 def test():
-    #test_general()
+    test_general()
     #test_operator(print_each_result=True)
     #test_fraction(50)
     #test_random(15)
     #test_inf_and_no_solution()
-    test_periodic()
+    #test_periodic()
 
 
 def test_general():
-    n = 1.0
-    d = 0.0
-    r = Fraction(f'{n}/{d}')
-    print(r)
+    f = 1/97
+    r1 = convert_float_to_fraction(f)
+    r2 = Fraction(f)
+    print(r1, r2)
 
 
 def test_fraction(n=11, count_down=False):
     gv.MATRIX_SIZE = n
-    rx = []
+    mx = []
     for row in range(0, n):
         cr = []
         for col in range(0, n):
@@ -33,25 +33,25 @@ def test_fraction(n=11, count_down=False):
         #r = Fraction(row+1)
         r = Fraction((row ** 2 - row + 5) * 10000)
         cr.append(r)
-        rx.append(cr)
+        mx.append(cr)
     if not gv.show_steps:
-        print_matrix(rx)
-    #test_n_vs_n_minus_one_steps(rx)
-    test_double_vs_fraction_matrix(rx)
+        print_matrix(mx)
+    #test_n_vs_n_minus_one_steps(mx)
+    test_float_vs_fraction_matrix(mx)
 
 
 def test_random(n=10, count_down=False):
     gv.MATRIX_SIZE = n
-    rx = []
+    mx = []
     for row in range(0, n):
         cr = []
         for col in range(0, n+1):
             rnd = random.randint(0, 10000000)
             cr.append(Fraction(rnd))
-        rx.append(cr)
+        mx.append(cr)
     if not gv.show_steps:
-        print_matrix(rx)
-    test_double_vs_fraction_matrix(rx)
+        print_matrix(mx)
+    test_float_vs_fraction_matrix(mx)
 
 
 def test_periodic():
@@ -76,30 +76,30 @@ def test_inf_and_no_solution():
     n = 2
     gv.MATRIX_SIZE = n
     print('\nTest - no solution')
-    rx = [
+    mx = [
         [1, 1, 1],
         [1, 1, 2]
     ]
-    convert_matrix_to_fraction(rx)
+    convert_matrix_to_fraction(mx)
     if not gv.show_steps:
-        print_matrix(rx)
-    test_double_vs_fraction_matrix(rx)
+        print_matrix(mx)
+    test_float_vs_fraction_matrix(mx)
     print('\nTest - infinite solution')
-    rx = [
+    mx = [
         [1, 1, 1],
         [0, 0, 0]
     ]
-    convert_matrix_to_fraction(rx)
+    convert_matrix_to_fraction(mx)
     if not gv.show_steps:
-        print_matrix(rx)
-    test_double_vs_fraction_matrix(rx)
+        print_matrix(mx)
+    test_float_vs_fraction_matrix(mx)
 
 
-def test_n_vs_n_minus_one_steps(rx):
-    gv.MATRIX_SIZE = len(rx)
-    r1 = copy_matrix(rx)
-    for row in range(len(rx)):
-        r1[row][-2] = rx[row][-1]
+def test_n_vs_n_minus_one_steps(mx):
+    gv.MATRIX_SIZE = len(mx)
+    r1 = copy_matrix(mx)
+    for row in range(len(mx)):
+        r1[row][-2] = mx[row][-1]
         r1[row].pop(-1)
     r1.pop(-1)
     gv.MATRIX_SIZE -= 1
@@ -107,11 +107,11 @@ def test_n_vs_n_minus_one_steps(rx):
     r1_steps = gv.step_by_step_matrix
     gv.step_by_step_matrix = []
     gv.MATRIX_SIZE += 1
-    rx = solve_matrix(rx, True)
-    rx_steps = gv.step_by_step_matrix
+    mx = solve_matrix(mx, True)
+    mx_steps = gv.step_by_step_matrix
     for i in range(len(r1_steps)):
         m1 = r1_steps[i]
-        m2 = rx_steps[i]
+        m2 = mx_steps[i]
         print(f'{i}:')
         print_matrix(m1)
         print_matrix(m2)
@@ -120,11 +120,11 @@ def test_n_vs_n_minus_one_steps(rx):
     print('success')
 
 
-def test_double_vs_fraction_matrix(rx):
-    dx = copy_matrix(rx)
+def test_float_vs_fraction_matrix(mx):
+    dx = copy_matrix(mx)
     convert_matrix_to_float(dx)
     td = copy_matrix(dx)
-    tr = copy_matrix(rx)
+    tr = copy_matrix(mx)
     start_time = time.perf_counter()
     td = solve_matrix(td)
     end_time = time.perf_counter()
@@ -139,7 +139,7 @@ def test_double_vs_fraction_matrix(rx):
     end_time = time.perf_counter()
     time_r = end_time - start_time
     print(get_solution_string(tr, spaces=2))
-    result_r = check_result(rx, tr)
+    result_r = check_result(mx, tr)
     dev_r = print_result(result_r)
     print(f'time: {time_r} sec')
     d_r_dev = 'inf'
@@ -208,7 +208,23 @@ def convert_matrix_to_fraction(x):
     n = len(x)
     for row in range(n):
         for col in range(n+1):
-            x[row][col] = Fraction(x[row][col].numerator, x[row][col].denominator)
+            x[row][col] = convert_float_to_fraction(x[row][col])
+
+
+def convert_float_to_fraction(f):
+    if type(f) is not float:
+        return Fraction(f)
+    n, d = check_periodic(f)
+    if d == 1:
+        return Fraction(n)
+    return Fraction(n, d)
+
+
+def check_periodic(exp):
+    for n in range(1, gv.MAX_N_FOR_PERIODIC_CHECK):
+        if exp * n == int(exp * n):
+            return int(exp * n), int(n)
+    return exp, 1
 
 
 def get_none_matrix(n):

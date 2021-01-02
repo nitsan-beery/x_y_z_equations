@@ -1,5 +1,5 @@
 
-test_mode = False
+test_mode = True
 debug_mode = False
 
 
@@ -18,6 +18,8 @@ X_ENTRY_SIZE = 5
 
 no_solution = 'No Solution'
 infinite = 'infinite'
+
+MAX_N_FOR_PERIODIC_CHECK = 1000
 
 # for testing
 step_by_step_matrix = []
