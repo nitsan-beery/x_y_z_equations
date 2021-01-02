@@ -5,10 +5,10 @@ from fractions import Fraction
 
 
 def test():
-    test_general()
+    #test_general()
     #test_operator(print_each_result=True)
-    #test_fraction(50)
-    #test_random(15)
+    test_fraction(80, count_down=True)
+    #test_random(50, count_down=True)
     #test_inf_and_no_solution()
     #test_periodic()
 
@@ -37,7 +37,7 @@ def test_fraction(n=11, count_down=False):
     if not gv.show_steps:
         print_matrix(mx)
     #test_n_vs_n_minus_one_steps(mx)
-    test_float_vs_fraction_matrix(mx)
+    test_float_vs_fraction_matrix(mx, count_down)
 
 
 def test_random(n=10, count_down=False):
@@ -51,7 +51,7 @@ def test_random(n=10, count_down=False):
         mx.append(cr)
     if not gv.show_steps:
         print_matrix(mx)
-    test_float_vs_fraction_matrix(mx)
+    test_float_vs_fraction_matrix(mx, count_down)
 
 
 def test_periodic():
@@ -120,7 +120,7 @@ def test_n_vs_n_minus_one_steps(mx):
     print('success')
 
 
-def test_float_vs_fraction_matrix(mx):
+def test_float_vs_fraction_matrix(mx, count_down=False):
     dx = copy_matrix(mx)
     convert_matrix_to_float(dx)
     td = copy_matrix(dx)
@@ -129,34 +129,41 @@ def test_float_vs_fraction_matrix(mx):
     td = solve_matrix(td)
     end_time = time.perf_counter()
     time_d = end_time - start_time
-    print('double:\n' + get_solution_string(td, spaces=2))
+    print('float:\n' + get_solution_string(td, spaces=2))
     result_d = check_result(dx, td)
     dev_d = print_result(result_d)
     print(f'time: {time_d} sec')
-    print('\nfraction:')
+    print('\nFraction:')
     start_time = time.perf_counter()
-    tr = solve_matrix(tr, get_step_by_step_matrix=False)
+    tr = solve_matrix(tr, count_down=count_down, get_step_by_step_matrix=False)
+    max_digits = 0
+    for row in range(len(tr)):
+        if len(str(tr[row][row].numerator)) > max_digits:
+            max_digits = len(str(tr[row][row].numerator))
+        if len(str(tr[row][row].denominator)) > max_digits:
+            max_digits = len(str(tr[row][row].denominator))
     end_time = time.perf_counter()
     time_r = end_time - start_time
     print(get_solution_string(tr, spaces=2))
     result_r = check_result(mx, tr)
     dev_r = print_result(result_r)
     print(f'time: {time_r} sec')
-    d_r_dev = 'inf'
+    f_F_dev = 'inf'
     if dev_r == 0:
         if dev_d == 0:
-            d_r_dev = '1'
+            f_F_dev = '1'
         else:
-            d_r_dev = 'inf'
+            f_F_dev = 'inf'
     elif dev_r is gv.no_solution:
         if dev_d is gv.no_solution:
-            d_r_dev = '1'
+            f_F_dev = '1'
         else:
-            d_r_dev = '-inf'
+            f_F_dev = '-inf'
     elif dev_d is not gv.no_solution:
-        d_r_dev = float(dev_d / dev_r)
-    print(f'\nd_deviation / r_deviation: {d_r_dev}')
-    print(f'r_time / d_time: {time_r / time_d}')
+        f_F_dev = float(dev_d / dev_r)
+    print(f'\nfloat deviation / Fraction deviation: {f_F_dev}')
+    print(f'Fraction time / float time: {time_r / time_d}')
+    print(f'max digits: {max_digits}')
 
 
 def check_result(x, r):

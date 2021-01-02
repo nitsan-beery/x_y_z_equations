@@ -2,10 +2,12 @@ import global_vars as gv
 from fractions import Fraction
 
 
-def solve_matrix(x, show_steps_improper=True, get_step_by_step_matrix=False):
+def solve_matrix(x, show_steps_improper=True, count_down=False, get_step_by_step_matrix=False):
     matrix_size = len(x)
     if gv.show_steps:
         print('\n==========================\n')
+    if count_down:
+        print('count down - ', end='')
     for col in range(0, matrix_size):
         if gv.show_steps:
             print_matrix(x, show_steps_improper)
@@ -32,8 +34,12 @@ def solve_matrix(x, show_steps_improper=True, get_step_by_step_matrix=False):
         if get_step_by_step_matrix:
             tmp_x = copy_matrix(x)
             gv.step_by_step_matrix.append(tmp_x)
+        if count_down:
+            print(f'{matrix_size - col} ', end='')
     if gv.show_steps:
         print_matrix(x, show_steps_improper)
+    if count_down:
+        print('')
 
     # arrange results for each x[i]
     result_array = []
