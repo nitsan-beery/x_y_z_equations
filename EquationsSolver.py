@@ -2,13 +2,13 @@ import global_vars as gv
 from fractions import Fraction
 
 
-def solve_matrix(x, get_step_by_step_matrix=False):
+def solve_matrix(x, show_steps_improper=True, get_step_by_step_matrix=False):
     matrix_size = len(x)
     if gv.show_steps:
         print('\n==========================\n')
     for col in range(0, matrix_size):
         if gv.show_steps:
-            print_matrix(x)
+            print_matrix(x, show_steps_improper)
         ref = col
         if x[ref][ref] == 0:
             r = find_non_zero_row(x, ref)
@@ -18,7 +18,7 @@ def solve_matrix(x, get_step_by_step_matrix=False):
             else:
                 replace_rows(x, ref, r)
                 if gv.show_steps:
-                    print_matrix(x)
+                    print_matrix(x, show_steps_improper)
         ref_value = x[ref][ref]
         for c in range(ref, matrix_size + 1):
             x[ref][c] /= ref_value
@@ -33,7 +33,7 @@ def solve_matrix(x, get_step_by_step_matrix=False):
             tmp_x = copy_matrix(x)
             gv.step_by_step_matrix.append(tmp_x)
     if gv.show_steps:
-        print_matrix(x)
+        print_matrix(x, show_steps_improper)
 
     # arrange results for each x[i]
     result_array = []
@@ -121,25 +121,26 @@ def get_solution_string(result_array, spaces=5):
 def get_fraction_str(f):
     if type(f) is not Fraction:
         return f'{f}'
-    if len(str(f.denominator)) > gv.MAX_DIGITS_TO_SHOW_FRACTION:
+    if gv.show_fraction == gv.fraction_type_float:
         return f'{f.numerator / f.denominator}'
-    if gv.show_int_above_1 and abs(f) > 1 and f.denominator != 1:
+    if gv.show_fraction == gv.fraction_type_proper and abs(f) > 1 and f.denominator != 1:
         return f'{f.numerator//f.denominator}({f.numerator % f.denominator}/{f.denominator})'
     return f'{f}'
 
 
-def print_matrix(x):
+def print_matrix(x, f_type_only_improper=True):
     n = len(x)
-    tmp_state = gv.show_int_above_1
-    gv.show_int_above_1 = False
+    tmp_state = gv.show_fraction
+    if f_type_only_improper:
+        gv.show_fraction = gv.fraction_type_improper
     for row in range(0, n):
         str_row = ''
         for col in range(0, n):
-            str_row += f'{x[row][col]} '
-        str_row += f'   {x[row][-1]}'
+            str_row += get_fraction_str(x[row][col]) + ' '
+        str_row += '   ' + get_fraction_str(x[row][-1])
         print(str_row)
     print('--------------------------')
-    gv.show_int_above_1 = tmp_state
+    gv.show_fraction = tmp_state
 
 
 def copy_matrix(origin):

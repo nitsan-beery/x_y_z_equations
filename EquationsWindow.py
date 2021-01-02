@@ -51,7 +51,7 @@ class EquationsWindow:
         self.label_empty_31 = tk.Label(self.frame_3_buttons, text='')
         self.button_solve = tk.Button(self.frame_3_buttons, text='Solve', width=4, bg='#CCFFCC', command=self.solve)
         self.button_reset = tk.Button(self.frame_3_buttons, text='Reset', width=4, bg='#F9C7C7', command=self.reset)
-        self.button_fraction = tk.Button(self.frame_3_buttons, text='1(n/d)', width=6, command=self.switch_fraction_type)
+        self.button_fraction = tk.Button(self.frame_3_buttons, text=gv.show_fraction, width=6, command=self.switch_fraction_type)
         self.button_steps = tk.Button(self.frame_3_buttons, text='show steps', width=8, command=self.switch_show_steps_mode)
 
         self.label_empty_31.pack(side=tk.TOP)
@@ -66,8 +66,6 @@ class EquationsWindow:
         self.reset()
         if gv.show_steps:
             self.button_steps.config(relief="sunken")
-        if gv.show_int_above_1:
-            self.button_fraction.config(relief="sunken")
 
     def set_window_nxn(self, n=gv.MATRIX_SIZE):
         self.set_matrix_nxn(n)
@@ -177,14 +175,14 @@ class EquationsWindow:
                 self.entry_answer.insert(0, f'invalid n[{row+1}]')
                 return
 
-        self.solution = solve_matrix(x)
+        self.solution = solve_matrix(x, show_steps_improper=False)
         self.entry_answer.insert(0, get_solution_string(self.solution))
 
     def switch_fraction_type(self):
-        if toggle(self.button_fraction) == "on":
-            gv.show_int_above_1 = True
-        else:
-            gv.show_int_above_1 = False
+        fraction_type = [gv.fraction_type_improper, gv.fraction_type_proper, gv.fraction_type_float]
+        n = fraction_type.index(gv.show_fraction)
+        gv.show_fraction = fraction_type[(n+1) % len(fraction_type)]
+        self.button_fraction.config(text=gv.show_fraction)
         if self.solution != gv.no_solution:
             self.entry_answer.delete(0, tk.END)
             self.entry_answer.insert(0, get_solution_string(self.solution))
