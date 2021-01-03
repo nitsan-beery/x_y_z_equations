@@ -1,5 +1,5 @@
 
-test_mode = True
+test_mode = False
 debug_mode = False
 
 

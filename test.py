@@ -5,10 +5,12 @@ from fractions import Fraction
 
 
 def test():
+    gv.show_fraction = gv.fraction_type_improper
+
     #test_general()
     #test_operator(print_each_result=True)
-    test_fraction(80, count_down=True)
-    #test_random(50, count_down=True)
+    test_fraction(100, count_down=True)
+    #test_random(40, count_down=False)
     #test_inf_and_no_solution()
     #test_periodic()
 
@@ -138,10 +140,11 @@ def test_float_vs_fraction_matrix(mx, count_down=False):
     tr = solve_matrix(tr, count_down=count_down, get_step_by_step_matrix=False)
     max_digits = 0
     for row in range(len(tr)):
-        if len(str(tr[row][row].numerator)) > max_digits:
-            max_digits = len(str(tr[row][row].numerator))
-        if len(str(tr[row][row].denominator)) > max_digits:
-            max_digits = len(str(tr[row][row].denominator))
+        if type(tr[row][row]) is Fraction:
+            if len(str(tr[row][row].numerator)) > max_digits:
+                max_digits = len(str(tr[row][row].numerator))
+            if len(str(tr[row][row].denominator)) > max_digits:
+                max_digits = len(str(tr[row][row].denominator))
     end_time = time.perf_counter()
     time_r = end_time - start_time
     print(get_solution_string(tr, spaces=2))
@@ -169,7 +172,6 @@ def test_float_vs_fraction_matrix(mx, count_down=False):
 def check_result(x, r):
     n = len(r)
     result = []
-    max_digits = 0
     if r[0][0] == gv.no_solution:
         return [gv.no_solution]
     for row in range(n):
@@ -184,8 +186,12 @@ def check_result(x, r):
             add = f1 * f2
             result_row += add
         result_row -= x[row][-1]
+        # percentage deviation
+        ref = x[row][-1]
+        if ref == 0:
+            ref = 10 ** -gv.PRECISION
+        result_row = 100 * result_row / ref
         result.append(abs(result_row))
-    result.append(max_digits)
     return result
 
 
@@ -197,7 +203,7 @@ def print_result(r):
     for i in range(1, len(r) - 1):
         dev += r[i]
         dev_vector += f'{r[i]}   '
-    print('row deviation: ' + dev_vector)
+    print('row deviation (%): ' + dev_vector)
     dev /= len(r)
     print(f'average deviation: {float(dev)}')
     return dev
