@@ -176,7 +176,7 @@ class EquationsWindow:
                 return
 
         self.solution = solve_matrix(x, show_steps_improper=False)
-        self.entry_answer.insert(0, get_solution_string(self.solution))
+        self.entry_answer.insert(0, ' ' + get_solution_string(self.solution))
 
     def switch_fraction_type(self):
         fraction_type = [gv.fraction_type_improper, gv.fraction_type_proper, gv.fraction_type_float]
@@ -185,7 +185,7 @@ class EquationsWindow:
         self.button_fraction.config(text=gv.show_fraction)
         if self.solution != gv.no_solution:
             self.entry_answer.delete(0, tk.END)
-            self.entry_answer.insert(0, get_solution_string(self.solution))
+            self.entry_answer.insert(0, ' ' + get_solution_string(self.solution))
 
     def switch_show_steps_mode(self):
         if toggle(self.button_steps) == "on":
