@@ -5,21 +5,19 @@ from fractions import Fraction
 
 
 def test():
-    gv.show_fraction = gv.fraction_type_improper
+    gv.show_fraction = gv.fraction_type_proper
 
-    #test_general()
+    test_general()
     #test_operator(print_each_result=True)
-    test_fraction(100, count_down=True)
+    #test_fraction(100, count_down=True)
     #test_random(40, count_down=False)
     #test_inf_and_no_solution()
     #test_periodic()
 
 
 def test_general():
-    f = 1/97
-    r1 = convert_float_to_fraction(f)
-    r2 = Fraction(f)
-    print(r1, r2)
+    f = Fraction('-5/4')
+    print(get_fraction_str(f))
 
 
 def test_fraction(n=11, count_down=False):

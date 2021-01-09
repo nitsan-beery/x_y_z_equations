@@ -130,7 +130,12 @@ def get_fraction_str(f):
     if gv.show_fraction == gv.fraction_type_float:
         return f'{f.numerator / f.denominator}'
     if gv.show_fraction == gv.fraction_type_proper and abs(f) > 1 and f.denominator != 1:
-        return f'{f.numerator//f.denominator}({f.numerator % f.denominator}/{f.denominator})'
+        if f > 0:
+            sign = 1
+        else:
+            sign = -1
+        f = abs(f)
+        return f'{sign * (f.numerator//f.denominator)}({f.numerator % f.denominator}/{f.denominator})'
     return f'{f}'
 
 
