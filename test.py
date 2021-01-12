@@ -7,17 +7,23 @@ from fractions import Fraction
 def test():
     gv.show_fraction = gv.fraction_type_proper
 
-    test_general()
+    #test_general()
     #test_operator(print_each_result=True)
     #test_fraction(100, count_down=True)
-    #test_random(40, count_down=False)
+    test_random(4, count_down=False)
     #test_inf_and_no_solution()
     #test_periodic()
 
 
 def test_general():
-    f = Fraction('-5/4')
-    print(get_fraction_str(f))
+    x = [
+        [-17, 43, -92, 21, -80],
+        [46, 81, -86, 100, -47],
+        [80, 15, -81, 48, -9],
+        [-100, 92, 86, -89, 48]
+    ]
+    convert_matrix_to_fraction(x)
+    print_matrix(x)
 
 
 def test_fraction(n=11, count_down=False):
@@ -46,7 +52,7 @@ def test_random(n=10, count_down=False):
     for row in range(0, n):
         cr = []
         for col in range(0, n+1):
-            rnd = random.randint(0, 10000000)
+            rnd = random.randint(-100, 100)
             cr.append(Fraction(rnd))
         mx.append(cr)
     if not gv.show_steps:

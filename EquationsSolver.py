@@ -144,11 +144,25 @@ def print_matrix(x, f_type_only_improper=True):
     tmp_state = gv.show_fraction
     if f_type_only_improper:
         gv.show_fraction = gv.fraction_type_improper
+    tab_size = [0] * n
+    for col in range(0, n):
+        for row in range(0, n):
+            cell_size = len(get_fraction_str(abs(x[row][col])))
+            if cell_size >= tab_size[col]:
+                tab_size[col] = cell_size
+        tab_size[col] += 3
     for row in range(0, n):
         str_row = ''
+        if x[row][0] >= 0:
+            str_row = ' '
         for col in range(0, n):
-            str_row += get_fraction_str(x[row][col]) + ' '
-        str_row += '   ' + get_fraction_str(x[row][-1])
+            cell_tab = tab_size[col]
+            if x[row][col] < 0:
+                cell_tab += 1
+            if x[row][col+1] < 0:
+                cell_tab -= 1
+            str_row += f'{get_fraction_str(x[row][col]):<{cell_tab}}'
+        str_row += get_fraction_str(x[row][-1])
         print(str_row)
     print('--------------------------')
     gv.show_fraction = tmp_state
