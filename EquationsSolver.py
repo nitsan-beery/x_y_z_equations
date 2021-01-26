@@ -98,9 +98,7 @@ def get_solution_string(result_array, spaces=5):
         return gv.no_solution
     name_x = get_name_x(matrix_size)
     result = ''
-    space = ''
-    for i in range(0, spaces):
-        space += ' '
+    space = ' ' * spaces
     for i in range(0, matrix_size):
         if result_array[i][i] == gv.infinite:
             result_i = gv.infinite

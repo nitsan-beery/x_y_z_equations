@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+import win32con
+import win32gui
+import win32api
 from EquationsSolver import *
 
 
@@ -13,8 +16,12 @@ def toggle(b):
 
 
 class EquationsWindow:
-    def __init__(self):
-        self.window_main = tk.Tk(className=' Equations Solver')
+    def __init__(self, parent):
+        self.window_main = tk.Tk(className=' Linear Equations Solver')
+
+        # keep the window on top of all other (True / False)
+        self.window_main.wm_attributes("-topmost", gv.win_always_on_top)
+
         self.window_main.resizable(1, 0)
 
         self.label_name_x = []
@@ -26,6 +33,8 @@ class EquationsWindow:
         self.label_row = []
         self.label_empty_21 = None
         self.label_n = None
+
+        self.parent = parent
 
         self.frame_1_output = tk.Frame(self.window_main)
         self.frame_1_output.pack(side=tk.TOP, fill=tk.BOTH, pady=10)
@@ -61,6 +70,7 @@ class EquationsWindow:
         self.button_steps.pack(side=tk.RIGHT, padx=5)
 
         self.window_main.bind('<Key>', self.board_key)
+        self.window_main.bind('<Enter>', self.minimize_parent)
 
         self.solution = None
         self.reset()
@@ -72,7 +82,13 @@ class EquationsWindow:
 
         width = 275 + 57 * (gv.MATRIX_SIZE-2)
         height = 200 + 44 * (gv.MATRIX_SIZE-2)
-        self.window_main.geometry(f'{width}x{height}')
+        if gv.set_win_pos:
+            x = int((win32api.GetSystemMetrics(0) - width) * gv.win_x_pos) - gv.win_border
+            y = int((win32api.GetSystemMetrics(1) - height) * gv.win_y_pos) - gv.win_border
+            self.window_main.geometry(f'{width}x{height}+{x}+{y}')
+            gv.set_win_pos = False
+        else:
+            self.window_main.geometry(f'{width}x{height}')
         
         name_x = get_name_x(n)
 
@@ -110,9 +126,7 @@ class EquationsWindow:
         self.label_equal = []
         self.label_empty = []
         self.label_row = []
-        none_row = []
-        for col in range(0, n):
-            none_row.append(None)
+        none_row = [None] * n
         for row in range(0, n):
             self.label_name_x.append(None)
             self.entry_x.append(none_row.copy())
@@ -196,3 +210,10 @@ class EquationsWindow:
     def board_key(self, key):
         if key.keycode == 13:
             self.solve()
+
+    def minimize_parent(self, key):
+        if gv.minimize_bg_window and gv.minimize_counter == 0:
+            win32gui.ShowWindow(self.parent, win32con.SW_MINIMIZE)
+        gv.minimize_counter += 1
+
+
